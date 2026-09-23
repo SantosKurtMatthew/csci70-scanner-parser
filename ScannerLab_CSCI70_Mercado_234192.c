@@ -3,7 +3,7 @@ Token list and Implementation status
 1. Identifier
 2. Number
 3. String
-4. Assign: :=
+DONE    4. Assign: :=
 DONE    5. Semicolon: ;
 DONE    6. Colon: :
 DONE    7. Comma: ,
@@ -11,17 +11,19 @@ DONE    8. LeftParen: (
 DONE    9. RightParen: )
 DONE    10. Plus: +
 DONE    11. Minus: -
-12. Multiply: *
-13. Divide: /
-14. Raise: **
-15. LessThan: <
-16. Equal: =
-17. GreaterThan: >
-18. LTEqual: <=
-19. GTEqual: >=
-20. NotEqual: !=
-21. EndofFile
+DONE    12. Multiply: *
+DONE    13. Divide: /
+DONE    14. Raise: **
+DONE    15. LessThan: <
+DONE    16. Equal: =
+DONE    17. GreaterThan: >
+DONE    18. LTEqual: <=
+DONE    19. GTEqual: >=
+DONE    20. NotEqual: !=
+DONE    21. EndofFile
+DONE    (Addtl) Commment
 */
+
 #include <stdio.h>
 #include <ctype.h>
 #include <dirent.h>
@@ -80,11 +82,6 @@ void readFile(char *fileName) { // function to read each individual input text f
                     end();
                 }
 
-                else if (ch == ':') { // create COLON token if next character is :
-                    fprintf(output, "Colon   %c", ch);
-                    end();
-                }
-
                 else if (ch == ',') { // create COMMA token if next character is ,
                     fprintf(output, "Comma   %c", ch);
                     end();
@@ -100,6 +97,11 @@ void readFile(char *fileName) { // function to read each individual input text f
                     end();
                 }
 
+                else if (ch == '=') { // create Equal token if next character is =
+                    fprintf(output, "Equal   %c", ch);
+                    end();
+                }
+
 
                 // TOKENS W/ PUSHBACK
                 else if (ch == '*') { // go to state C if next character is *
@@ -110,8 +112,16 @@ void readFile(char *fileName) { // function to read each individual input text f
                     State = 'D';
                 }
 
-                else if (ch == '=') { // go to state E if next charcater is =
+                else if (ch == ':') { // go to state E if next character is :
                     State = 'E';
+                }
+                
+                else if (ch == '<') { // go to state F if next character is <
+                    State = 'F';
+                }
+
+                else if (ch == '>') { // go to state G if next character is >
+                    State = 'G';
                 }
 
                 else { // error if other characters
@@ -163,15 +173,47 @@ void readFile(char *fileName) { // function to read each individual input text f
             
             case 'E':
                 if (ch == '=') { 
-                    fprintf(output, "ASSIGN  =="); // end ASSIGN token if second '=' is found
+                    fprintf(output, "ASSIGN  :="); // end ASSIGN token if '=' is found
                     end();
                 }
-
+                else { // anything else terminates as a COLON token
+                    ungetc(ch, input);
+                    fprintf(output, "Colon   :");
+                    end();
+                }
+                /* 
                 else {
                     fprintf(output, "Lexical Error reading character \"%c\"\n", ch); // go to state S if second '=' not found
                     State = 'S';
                 }
+                */
 
+                break;
+
+            case 'F': // state for creating LTEqual/LessThan tokens
+                if (ch == '=') { // if <= thats LTEqual token
+                    fprintf(output, "LTEqual   <=\n");
+                }
+
+                else { // anything else terminates as a LessThan token
+                    ungetc(ch, input);
+                    fprintf(output, "LessThan   <");
+                    end();
+                }
+                State = 'A';
+                break;
+
+            case 'G': // state for creating GTEqual/GreaterThan tokens
+                if (ch == '=') { // if <= thats LTEqual token
+                    fprintf(output, "GTEqual   >=\n");
+                }
+
+                else { // anything else terminates as a GreaterThan token
+                    ungetc(ch, input);
+                    fprintf(output, "GreaterThan   >");
+                    end();
+                }
+                State = 'A';
                 break;
             
             case 'S': // state that handles errors, stop output
