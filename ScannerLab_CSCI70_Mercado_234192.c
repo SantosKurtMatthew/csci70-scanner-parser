@@ -55,7 +55,7 @@ void readFile(char *fileName) { // function to read each individual input text f
             State = 'A';
         }
 
-        if (isspace(ch)) {
+        if (isspace(ch) && State != 'I') {
             continue;
         }
 
@@ -128,8 +128,14 @@ void readFile(char *fileName) { // function to read each individual input text f
                     State = 'H';
                 }
 
+                // STRING
+                else if (ch == '\"') { // go to state H if next character is !
+                    State = 'I';
+                    fprintf(output, "String     %c", ch);
+                }
+
                 else { // error if other characters
-                    fprintf(output, "STATE A  \"%c\"\n", ch);
+                    fprintf(output, "Lexical Error reading character \"%c\"\n", ch);
                     State = 'S';
                 }
 
@@ -225,10 +231,21 @@ void readFile(char *fileName) { // function to read each individual input text f
                 }
 
                 else {
-                    fprintf(output, "STATE H \"%c\"\n", ch); // go to state S if '=' not found
+                    fprintf(output, "Lexical Error reading character \"%c\"\n", ch); // go to state S if '=' not found
                     State = 'S';
                 }
                 break;
+
+            case 'I':
+                if (ch == '\"'){
+                    State = 'A';
+                    fprintf(output, "%c", ch);
+                    end();
+                }
+                else {
+                    State = 'I';
+                    fprintf(output, "%c", ch);
+                }
             
             case 'S': // state that handles errors, stop output
                 break;
