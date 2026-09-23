@@ -124,8 +124,12 @@ void readFile(char *fileName) { // function to read each individual input text f
                     State = 'G';
                 }
 
+                else if (ch == '!') { // go to state H if next character is !
+                    State = 'H';
+                }
+
                 else { // error if other characters
-                    fprintf(output, "Lexical Error reading character \"%c\"\n", ch);
+                    fprintf(output, "STATE A  \"%c\"\n", ch);
                     State = 'S';
                 }
 
@@ -147,7 +151,8 @@ void readFile(char *fileName) { // function to read each individual input text f
 
             case 'C': // state for creating Multiply/Raise token 
                 if (ch == '*') { // if * again, thats a RAISE token
-                    fprintf(output, "Raise   **\n");
+                    fprintf(output, "Raise   **");
+                    end();
                 }
 
                 else { // anything else terminates as a MULTIPLY token
@@ -160,7 +165,8 @@ void readFile(char *fileName) { // function to read each individual input text f
 
             case 'D': // state for creating Multiply/Raise token 
                 if (ch == '/') { // if * again, thats a COMMENT token
-                    fprintf(output, "Comment   //\n");
+                    fprintf(output, "Comment   //");
+                    end();
                 }
 
                 else { // anything else terminates as a DIVIDE token
@@ -181,18 +187,13 @@ void readFile(char *fileName) { // function to read each individual input text f
                     fprintf(output, "Colon   :");
                     end();
                 }
-                /* 
-                else {
-                    fprintf(output, "Lexical Error reading character \"%c\"\n", ch); // go to state S if second '=' not found
-                    State = 'S';
-                }
-                */
 
                 break;
 
             case 'F': // state for creating LTEqual/LessThan tokens
                 if (ch == '=') { // if <= thats LTEqual token
-                    fprintf(output, "LTEqual   <=\n");
+                    fprintf(output, "LTEqual   <=");
+                    end();
                 }
 
                 else { // anything else terminates as a LessThan token
@@ -205,7 +206,8 @@ void readFile(char *fileName) { // function to read each individual input text f
 
             case 'G': // state for creating GTEqual/GreaterThan tokens
                 if (ch == '=') { // if <= thats LTEqual token
-                    fprintf(output, "GTEqual   >=\n");
+                    fprintf(output, "GTEqual   >=");
+                    end();
                 }
 
                 else { // anything else terminates as a GreaterThan token
@@ -214,6 +216,18 @@ void readFile(char *fileName) { // function to read each individual input text f
                     end();
                 }
                 State = 'A';
+                break;
+            
+            case 'H': // state for creating NotEqual token
+                if (ch == '=') { // if != thats NotEqual token
+                    fprintf(output, "NotEqual   !=");
+                    end();
+                }
+
+                else {
+                    fprintf(output, "STATE H \"%c\"\n", ch); // go to state S if '=' not found
+                    State = 'S';
+                }
                 break;
             
             case 'S': // state that handles errors, stop output
