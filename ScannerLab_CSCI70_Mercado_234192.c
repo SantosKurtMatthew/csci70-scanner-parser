@@ -2,7 +2,7 @@
 Token list and Implementation status
 1. Identifier
 2. Number
-3. String
+DONE*   3. String -- DOES NOT HANDLE NEWLINES YET
 DONE    4. Assign: :=
 DONE    5. Semicolon: ;
 DONE    6. Colon: :
@@ -55,10 +55,9 @@ void readFile(char *fileName) { // function to read each individual input text f
             State = 'A';
         }
 
-        if (isspace(ch) && State != 'I') {
+        if (isspace(ch) && State != 'J') {
             continue;
         }
-
         switch(State) {
             case 'A': // start state
                 if (isdigit(ch)) { // go to state B if next character is a digit
@@ -128,12 +127,19 @@ void readFile(char *fileName) { // function to read each individual input text f
                     State = 'H';
                 }
 
-                // STRING
-                else if (ch == '\"') { // go to state H if next character is !
+                // IDENTIFIER
+                else if (isalpha(ch) != 0 || ch == '_') { // go to state I if next character is a letter or underscore (starting an identifier)
                     State = 'I';
+                    fprintf(output, "Identifier     %c", ch);
+                }
+
+                // STRING
+                else if (ch == '\"') { // go to state J if next character is " (starting a string)
+                    State = 'J';
                     fprintf(output, "String     %c", ch);
                 }
 
+                // ERROR STATE
                 else { // error if other characters
                     fprintf(output, "Lexical Error reading character \"%c\"\n", ch);
                     State = 'S';
@@ -237,13 +243,23 @@ void readFile(char *fileName) { // function to read each individual input text f
                 break;
 
             case 'I':
+                if (isalpha(ch) != 0 || isdigit(ch) != 0 || ch == '_'){
+                    State = 'I';
+                    fprintf(output, "%c", ch);
+                }
+                else{
+                    ungetc(ch, input);
+                    end();
+                }
+                break;
+
+            case 'J':
                 if (ch == '\"'){
-                    State = 'A';
                     fprintf(output, "%c", ch);
                     end();
                 }
                 else {
-                    State = 'I';
+                    State = 'J';
                     fprintf(output, "%c", ch);
                 }
             
