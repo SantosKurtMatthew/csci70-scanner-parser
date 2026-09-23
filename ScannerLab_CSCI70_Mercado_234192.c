@@ -147,19 +147,7 @@ void readFile(char *fileName) { // function to read each individual input text f
 
                 break;
 
-            case 'B': // state for creating NUM token 
-                if (isdigit(ch)) { // continue adding to NUM if next character is digit
-                    State = 'B';
-                    fprintf(output, "%c", ch);
-                }
-
-                else { // end NUM otherwise
-                    State = 'A';
-                    ungetc(ch, input);
-                    end();
-                }
-
-                break;
+            // STATE B was moved down because there are many states needed for the NUM token
 
             case 'C': // state for creating Multiply/Raise token 
                 if (ch == '*') { // if * again, thats a RAISE token
@@ -242,8 +230,8 @@ void readFile(char *fileName) { // function to read each individual input text f
                 }
                 break;
 
-            case 'I':
-                if (isalpha(ch) != 0 || isdigit(ch) != 0 || ch == '_'){
+            case 'I': // state for creating Identifier token
+                if (isalpha(ch) != 0 || isdigit(ch) != 0 || ch == '_'){ // checks if the character is a number, letter, or underscore
                     State = 'I';
                     fprintf(output, "%c", ch);
                 }
@@ -253,8 +241,8 @@ void readFile(char *fileName) { // function to read each individual input text f
                 }
                 break;
 
-            case 'J':
-                if (ch == '\"'){
+            case 'J': // state for creating String token
+                if (ch == '\"'){ // checks if the string is closed, otherwise continue adding to it
                     fprintf(output, "%c", ch);
                     end();
                 }
@@ -262,7 +250,91 @@ void readFile(char *fileName) { // function to read each individual input text f
                     State = 'J';
                     fprintf(output, "%c", ch);
                 }
+                break;
+
+            case 'B': // state for creating Whole Numbers (part of NUM token)
+                if (isdigit(ch)) { // continue adding to NUM if next character is digit
+                    State = 'B';
+                    fprintf(output, "%c", ch);
+                }
+                else if (ch == '.'){
+                    State = 'K';
+                    fprintf(output, "%c", ch);
+                }
+                else if (ch == 'E' || ch == 'e'){
+                    State = 'M';
+                    fprintf(output, "%c", ch);
+                }
+                else { // end NUM otherwise
+                    ungetc(ch, input);
+                    end();
+                }
+                break;
+
+            case 'K':
+                if (isdigit(ch)) {
+                    State = 'L';
+                    fprintf(output, "%c", ch);
+                }
+                else{
+                    fprintf(output, "\nLexical Error reading character \"%c\"\n", ch); // go to state S if number ends on a .
+                    State = 'S';
+                }
+                break;
+
+            case 'L': // Functionally state B but cannot take .
+                if (isdigit(ch)) { // continue adding to NUM if next character is digit
+                    State = 'L';
+                    fprintf(output, "%c", ch);
+                }
+                else if (ch == 'E' || ch == 'e'){
+                    State = 'M';
+                    fprintf(output, "%c", ch);
+                }
+                else { // end NUM otherwise
+                    ungetc(ch, input);
+                    end();
+                }
+                break;
             
+            case 'M': // state after E/e in the exponent
+                if (ch == '+' || ch == '-'){
+                    State = 'N';
+                    fprintf(output, "%c", ch);
+                }
+                else if (isdigit(ch)){
+                    State = 'O';
+                    fprintf(output, "%c", ch);
+                }
+                else{
+                    fprintf(output, "\nLexical Error reading character \"%c\"\n", ch); // go to state S if number ends on a .
+                    State = 'S';
+                }
+                break;
+            
+            case 'N': // state to check that the char after the +/- in state M is a number
+                if (isdigit(ch)){
+                    State = 'O';
+                    fprintf(output, "%c", ch);
+                }
+                else{
+                    fprintf(output, "\nLexical Error reading character \"%c\"\n", ch); // go to state S if number ends on a .
+                    State = 'S';
+                }
+                break;
+            
+            case 'O': // keep getting numbers to complete the exponent
+                if (isdigit(ch)){
+                    State = 'O';
+                    fprintf(output, "%c", ch);
+                }
+                else { // end NUM otherwise
+                    ungetc(ch, input);
+                    end();
+                }
+                break;
+                
+
             case 'S': // state that handles errors, stop output
                 break;
         }
