@@ -64,39 +64,50 @@ void readFile(char *fileName) { // function to read each individual input text f
                     fprintf(output, "NUM     %c", ch);
                 }
 
+                // START OF TOKENS W/O PUSHBACK
                 else if (ch == '+') { // create PLUS token if next character is +
                     fprintf(output, "PLUS    %c", ch);
-                    end();
-                }
-
-                else if (ch == ';') { // create SEMICOLON token if next character is -
-                    fprintf(output, "Semicolon   %c", ch);
-                    end();
-                }
-
-                else if (ch == ':') { // create COLON token if next character is -
-                    fprintf(output, "Colon   %c", ch);
-                    end();
-                }
-
-                else if (ch == ',') { // create COMMA token if next character is -
-                    fprintf(output, "Comma   %c", ch);
-                    end();
-                }
-
-                else if (ch == '(') { // create LeftParen token if next character is -
-                    fprintf(output, "LeftParen   %c", ch);
-                    end();
-                }
-
-                else if (ch == ')') { // create RightParen token if next character is -
-                    fprintf(output, "RightParen   %c", ch);
                     end();
                 }
 
                 else if (ch == '-') { // create MINUS token if next character is -
                     fprintf(output, "MINUS   %c", ch);
                     end();
+                }
+
+                else if (ch == ';') { // create SEMICOLON token if next character is ;
+                    fprintf(output, "Semicolon   %c", ch);
+                    end();
+                }
+
+                else if (ch == ':') { // create COLON token if next character is :
+                    fprintf(output, "Colon   %c", ch);
+                    end();
+                }
+
+                else if (ch == ',') { // create COMMA token if next character is ,
+                    fprintf(output, "Comma   %c", ch);
+                    end();
+                }
+
+                else if (ch == '(') { // create LeftParen token if next character is (
+                    fprintf(output, "LeftParen   %c", ch);
+                    end();
+                }
+
+                else if (ch == ')') { // create RightParen token if next character is )
+                    fprintf(output, "RightParen   %c", ch);
+                    end();
+                }
+
+
+                // TOKENS W/ PUSHBACK
+                else if (ch == '*') { // go to state C if next character is *
+                    State = 'C';
+                }
+
+                else if (ch == '/') { // go to state D if next character is /
+                    State = 'D';
                 }
 
                 else if (ch == '=') { // go to state E if next charcater is =
@@ -122,6 +133,32 @@ void readFile(char *fileName) { // function to read each individual input text f
                     end();
                 }
 
+                break;
+
+            case 'C': // state for creating Multiply/Raise token 
+                if (ch == '*') { // if * again, thats a RAISE token
+                    fprintf(output, "Raise   **\n");
+                }
+
+                else { // anything else terminates as a MULTIPLY token
+                    ungetc(ch, input);
+                    fprintf(output, "Multiply   *");
+                    end();
+                }
+                State = 'A';
+                break;
+
+            case 'D': // state for creating Multiply/Raise token 
+                if (ch == '/') { // if * again, thats a COMMENT token
+                    fprintf(output, "Comment   //\n");
+                }
+
+                else { // anything else terminates as a DIVIDE token
+                    ungetc(ch, input);
+                    fprintf(output, "Divide   /");
+                    end();
+                }
+                State = 'A';
                 break;
             
             case 'E':
