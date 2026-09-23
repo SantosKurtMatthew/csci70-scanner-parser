@@ -1,3 +1,27 @@
+/*
+Token list and Implementation status
+1. Identifier
+2. Number
+3. String
+4. Assign: :=
+DONE    5. Semicolon: ;
+DONE    6. Colon: :
+DONE    7. Comma: ,
+DONE    8. LeftParen: (
+DONE    9. RightParen: )
+DONE    10. Plus: +
+DONE    11. Minus: -
+12. Multiply: *
+13. Divide: /
+14. Raise: **
+15. LessThan: <
+16. Equal: =
+17. GreaterThan: >
+18. LTEqual: <=
+19. GTEqual: >=
+20. NotEqual: !=
+21. EndofFile
+*/
 #include <stdio.h>
 #include <ctype.h>
 #include <dirent.h>
@@ -42,6 +66,31 @@ void readFile(char *fileName) { // function to read each individual input text f
 
                 else if (ch == '+') { // create PLUS token if next character is +
                     fprintf(output, "PLUS    %c", ch);
+                    end();
+                }
+
+                else if (ch == ';') { // create SEMICOLON token if next character is -
+                    fprintf(output, "Semicolon   %c", ch);
+                    end();
+                }
+
+                else if (ch == ':') { // create COLON token if next character is -
+                    fprintf(output, "Colon   %c", ch);
+                    end();
+                }
+
+                else if (ch == ',') { // create COMMA token if next character is -
+                    fprintf(output, "Comma   %c", ch);
+                    end();
+                }
+
+                else if (ch == '(') { // create LeftParen token if next character is -
+                    fprintf(output, "LeftParen   %c", ch);
+                    end();
+                }
+
+                else if (ch == ')') { // create RightParen token if next character is -
+                    fprintf(output, "RightParen   %c", ch);
                     end();
                 }
 
