@@ -26,6 +26,12 @@ DONE    (Addtl) Commment
 
 /*
 Parser Production Status
+
+TODO:   add proper success/failure statements to parser functions,
+        update end of file (or line?) if statements,
+        replace nextToken with the required getToken() function,
+        test everything lol
+
 UNFINISHED  1. Prg
 UNFINISHED  2. Blk
 UNFINISHED  3. Stm
