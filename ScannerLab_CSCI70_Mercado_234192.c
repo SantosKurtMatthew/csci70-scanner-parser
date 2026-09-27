@@ -24,10 +24,35 @@ DONE    21. EndofFile
 DONE    (Addtl) Commment
 */
 
+/*
+Parser Production Status
+UNFINISHED  1. Prg
+UNFINISHED  2. Blk
+UNFINISHED  3. Stm
+UNFINISHED  4. Argfollow
+UNFINISHED  5. Arg
+UNFINISHED  6. Iffollow
+UNFINISHED  7. Exp
+UNFINISHED  8. Trmfollow
+UNFINISHED  9. Trm
+UNFINISHED  10. Facfollow
+UNFINISHED  11. Fac
+UNFINISHED  12. Litfollow
+UNFINISHED  13. Lit
+UNFINISHED  14. Val
+UNFINISHED  15. Cnd
+UNFINISHED  16. Rel
+*/
+
 #include <stdio.h>
 #include <ctype.h>
 #include <dirent.h>
 #include <string.h>
+
+int Prg(), Blk(), Stm(), Argfollow(), Arg(), Iffollow(), Exp(), Trmfollow(), Trm(),
+    Facfollow(), Fac(), Litfollow(), Lit(), Val(), Cnd(), Rel();
+
+char* nextToken;
 
 void readFile(char *fileName) { // function to read each individual input text file
     FILE *input = fopen(fileName, "r"); 
@@ -343,6 +368,13 @@ void readFile(char *fileName) { // function to read each individual input text f
     fclose(input);
 }
 
+int parseTokens()
+{
+    // char* nextToken
+
+
+}
+
 int main()
 {
     struct dirent *de;
@@ -358,4 +390,524 @@ int main()
 
     closedir(folder);    
     return 0;
+}
+
+int Prg()
+{
+    if (Blk())
+    {
+        if (nextToken == "EndOfFile")
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Blk()
+{
+    if (Stm())
+    {
+        if (Blk())
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (nextToken == " ")  //end of file
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Stm()
+{
+    if (nextToken == "Identifier")
+    {
+        if (nextToken == "Assign")
+        {
+            if (Exp())
+            {
+                if (nextToken == "Semicolon")
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (nextToken == "PRINT")
+    {
+        if (nextToken == "LeftParen")
+        {
+            if (Arg())
+            {
+                if (ArgFollow())
+                {
+                    if (nextToken == "RightParen")
+                    {
+                        if (nextToken == "Semicolon")
+                        {
+                            return 1;
+                        }
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (nextToken == "IF")
+    {
+        if (Cnd())
+        {
+            if (nextToken == "Colon")
+            {
+                if (Blk())
+                {
+                    if (Iffollow())
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Argfollow()
+{
+    if (nextToken == "Comma")
+    {
+        if (Arg())
+        {
+            if(Argfollow())
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (nextToken == " ")  //end of file
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Arg()
+{
+    if (nextToken == "String")
+    {
+        return 1;
+    }
+    else if (Exp())
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Iffollow()
+{
+    if (nextToken == "ENDIF")
+    {
+        if (nextToken == "Semicolon")
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (nextToken == "ELSE")
+    {
+        if (Blk())
+        {
+            if (nextToken == "ENDIF")
+            {
+                if (nextToken == "Semicolon")
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Exp()
+{
+    if (Trm())
+    {
+        if (Trmfollow())
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Trmfollow()
+{
+    if (nextToken == "Plus")
+    {
+        if (Trm())
+        {
+            if (Trmfollow())
+            {
+                return 1;
+            }
+            else 
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (nextToken == "Minus")
+    {
+        if (Trm())
+        {
+            if (Trmfollow())
+            {
+                return 1;
+            }
+            else 
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (nextToken == " ") // end of file
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Trm()
+{
+    if (Fac())
+    {
+        if (Facfollow())
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int FacFollow()
+{
+    if (nextToken == "Multiply")
+    {
+        if (Fac())
+        {
+            if (FacFollow())
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+    else if (nextToken == "Divide")
+    {
+        if (Fac())
+        {
+            if (FacFollow())
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+    else if (nextToken == "")   //end of file
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Fac()
+{
+    if (Lit())
+    {
+        if (Litfollow())
+        {
+            return 1;.
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Litfollow()
+{
+    if (nextToken == "Raise")
+    {
+        if (Lit())
+        {
+            if (Litfollow())
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (nextToken == " ")  //TODO end of file or line???
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Lit()
+{
+    if (nextToken == "Minus")
+    {
+        if (Val())
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (Val())
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Val()
+{
+    if (nextToken == "Identifier")
+    {
+        return 1;
+    }
+    else if (nextToken == "Number")
+    {
+        return 1;
+    }
+    else if (nextToken == "SQRT")
+    {
+        if (nextToken == "LeftParen")
+        {
+            if (Exp())
+            {
+                if (nextToken == "RightParen")
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (nextToken == "LeftParen")
+    {
+        //nextToken++
+        if (Exp())
+        {
+            //nextToken++
+            if (nextToken == "RightParen")
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Cnd()
+{
+    if (Exp())
+    {
+        if (Rel())
+        {
+            if (Exp())
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int Rel()
+{
+    if(nextToken == "LessThan"){ return 1; }
+    else if(nextToken == "Equal"){ return 1; }
+    else if(nextToken == "GreaterThan"){ return 1; }
+    else if(nextToken == "GTEqual"){ return 1; }
+    else if(nextToken == "NotEqual"){ return 1; }
+    else if(nextToken == "LTEqual"){ return 1; }
+    else ( return 0; )
 }
