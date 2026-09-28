@@ -404,6 +404,7 @@ int Prg()
     {
         if (nextToken == "EndOfFile")
         {
+            // [filename] is a valid SimpCalc program
             return 1;
         }
         else
@@ -450,20 +451,24 @@ int Stm()
             {
                 if (nextToken == "Semicolon")
                 {
+                    // Assignment Statement Recognized
                     return 1;
                 }
                 else
                 {
+                    // Invalid Statement
                     return 0;
                 }
             }
             else
             {
+                // Invalid Statement
                 return 0;
             }
         }
         else
         {
+            // Invalid Statement
             return 0;
         }
     }
@@ -479,26 +484,31 @@ int Stm()
                     {
                         if (nextToken == "Semicolon")
                         {
+                            // Print Statement Recognized
                             return 1;
                         }
                     }
                     else
                     {
+                        // Invalid Statement
                         return 0;
                     }
                 }
                 else
                 {
+                    // Invalid Statement
                     return 0;
                 }
             }
             else
             {
+                // Invalid Statement
                 return 0;
             }
         }
         else
         {
+            // Invalid Statement
             return 0;
         }
     }
@@ -512,30 +522,36 @@ int Stm()
                 {
                     if (Iffollow())
                     {
+                        // If Statement Begins
                         return 1;
                     }
                     else
                     {
+                        // Invalid Statement
                         return 0;
                     }
                 }
                 else
                 {
+                    // Invalid Statement
                     return 0;
                 }
             }
             else
             {
+                // Invalid Statement
                 return 0;
             }
         }
         else
         {
+            // Invalid Statement
             return 0
         }
     }
     else
     {
+        // Invalid Statement
         return 0;
     }
 }
@@ -592,6 +608,7 @@ int Iffollow()
     {
         if (nextToken == "Semicolon")
         {
+            // If Statement Ends
             return 1;
         }
         else
@@ -607,25 +624,30 @@ int Iffollow()
             {
                 if (nextToken == "Semicolon")
                 {
+                    // If Statement Ends
                     return 1;
                 }
                 else
                 {
+                    // Incomplete if Statement
                     return 0;
                 }
             }
             else
             {
+                // Incomplete if Statement
                 return 0;
             }
         }
         else
         {
+            // Incomplete if Statement
             return 0;
         }
     }
     else
     {
+        // Incomplete if Statement
         return 0;
     }
 }
