@@ -395,8 +395,17 @@ int main()
     }
 
     closedir(folder);    
+
+    char tokens[4][12] = {"Identifier", "Assign", "Number", "Semicolon"};
+    int counter = 0;
+
+    printf("%s\n", tokens[counter]);
+    char *nextToken = tokens[counter];
+    Prg();
     return 0;
 }
+
+
 
 int Prg()
 {
@@ -479,7 +488,7 @@ int Stm()
         {
             if (Arg())
             {
-                if (ArgFollow())
+                if (Argfollow())
                 {
                     if (nextToken == "RightParen")
                     {
@@ -547,7 +556,7 @@ int Stm()
         else
         {
             // Invalid Statement
-            return 0
+            return 0;
         }
     }
     else
@@ -740,13 +749,13 @@ int Trm()
     }
 }
 
-int FacFollow()
+int Facfollow()
 {
     if (nextToken == "Multiply")
     {
         if (Fac())
         {
-            if (FacFollow())
+            if (Facfollow())
             {
                 return 1;
             }
@@ -760,7 +769,7 @@ int FacFollow()
     {
         if (Fac())
         {
-            if (FacFollow())
+            if (Facfollow())
             {
                 return 1;
             }
