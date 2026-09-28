@@ -762,7 +762,7 @@ int Fac()
     {
         if (Litfollow())
         {
-            return 1;.
+            return 1;
         }
         else
         {
