@@ -28,9 +28,8 @@ DONE    (Addtl) Commment
 Parser Production Status
 
 TODO:   add proper success/failure statements to parser functions,
-        update end of file (or line?) if statements,
         replace nextToken with the required getToken() function,
-        test everything lol
+        test everything
 
 UNFINISHED  1. Prg
 UNFINISHED  2. Blk
@@ -452,13 +451,9 @@ int Blk()
             return 0;
         }
     }
-    else if (nextToken == " ")  //end of file
+    else    // epsilon
     {
         return 1;
-    }
-    else
-    {
-        return 0;
     }
 }
 
@@ -609,13 +604,9 @@ int Argfollow()
             return 0;
         }
     }
-    else if (strcmp(nextToken, " ") == 0)  //end of file
+    else    // epsilon
     {
         return 1;
-    }
-    else
-    {
-        return 0;
     }
 }
 
@@ -744,13 +735,9 @@ int Trmfollow()
             return 0;
         }
     }
-    else if (strcmp(nextToken, " ") == 0) // end of file
+    else    // epsilon
     {
         return 1;
-    }
-    else
-    {
-        return 0;
     }
 }
 
@@ -804,13 +791,9 @@ int Facfollow()
             }
         }
     }
-    else if (strcmp(nextToken, "") == 0)   //end of file
+    else    // epsilon
     {
         return 1;
-    }
-    else
-    {
-        return 0;
     }
 }
 
@@ -854,13 +837,9 @@ int Litfollow()
             return 0;
         }
     }
-    else if (strcmp(nextToken, " ") == 0)  //TODO end of file or line???
+    else    // epsilon
     {
         return 1;
-    }
-    else
-    {
-        return 0;
     }
 }
 
