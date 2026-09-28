@@ -409,6 +409,7 @@ int Prg()
         }
         else
         {
+            // EndOfFile expected
             return 0;
         }
     }
@@ -597,7 +598,8 @@ int Arg()
         return 1;
     }
     else
-    {
+    {   
+        // String or Exp expected
         return 0;
     }
 }
@@ -872,12 +874,14 @@ int Val()
                 }
                 else
                 {
+                    // Symbol Expected
                     return 0;
                 }
             }
         }
         else
         {
+            // Symbol Expected
             return 0;
         }
     }
@@ -893,12 +897,14 @@ int Val()
             }
             else
             {
+                // Symbol Expected
                 return 0;
             }
         }
     }
     else
     {
+        // Symbol Expected
         return 0;
     }
 }
@@ -920,6 +926,7 @@ int Cnd()
         }
         else
         {
+            // Missing relational operator
             return 0;
         }
     }
@@ -937,5 +944,8 @@ int Rel()
     else if(nextToken == "GTEqual"){ return 1; }
     else if(nextToken == "NotEqual"){ return 1; }
     else if(nextToken == "LTEqual"){ return 1; }
-    else ( return 0; )
+    else { 
+        // I dont think we need an error statement here since itll print in the Cnd production if theres an error
+        return 0;
+     }
 }
