@@ -29,6 +29,33 @@ DONE    (Addtl) Commment
 #include <dirent.h>
 #include <string.h>
 
+char *gettoken (char *fileName) {
+    static FILE *parseInput = NULL;
+    static char token[256];
+    char line[256];
+    if (parseInput == NULL) // open file if non opened yet
+    {    
+        parseInput = fopen(fileName, "r"); 
+    }
+
+    if (fgets(line, sizeof(line), parseInput) == NULL) {   // close upon end of file
+
+        fclose(parseInput);
+        parseInput = NULL;                          // no files opened
+        return NULL;
+    }
+
+    line[strcspn(line, "\n")] = '\0';          // strip newline
+
+    size_t len = strlen(line);
+    size_t typeLen = (len < 31) ? len : 31;
+    memcpy(token, line, typeLen);              // take only token from line (first 31 columns)
+    token[typeLen] = '\0';
+    for (int i = (int)typeLen - 1; i >= 0 && token[i] == ' '; i--)
+        token[i] = '\0';                       // remove padding (extra spaces after token)
+
+    return token;
+}
 void readFile(char *fileName) { // function to read each individual input text file
     FILE *input = fopen(fileName, "r"); 
     
@@ -389,6 +416,7 @@ void readFile(char *fileName) { // function to read each individual input text f
     fprintf(output, "%-31s\n", "EndofFile");
 
     fclose(input);
+    fclose(output);
 }
 
 
@@ -406,6 +434,17 @@ int main()
     }
 
     closedir(folder);    
+
+    printf("%s\n", gettoken("output.txt"));
+        printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+
+
     return 0;
 }
 
