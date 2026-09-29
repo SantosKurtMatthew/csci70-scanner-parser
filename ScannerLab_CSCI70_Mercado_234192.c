@@ -58,6 +58,7 @@ int Prg(), Blk(), Stm(), Argfollow(), Arg(), Iffollow(), Exp(), Trmfollow(), Trm
     Facfollow(), Fac(), Litfollow(), Lit(), Val(), Cnd(), Rel();
 
 char* nextToken;
+char* currentScanFile;
 
 char *gettoken (char *fileName) {
     static FILE *parseInput = NULL;
@@ -98,7 +99,7 @@ void readFile(char *fileName) { // function to read each individual input text f
 
     while ((found = strstr(current, "input")) != NULL) { // replace all instances of input with output
         strncat(outputName, current, found - current);
-        strcat(outputName, "output");
+        strcat(outputName, "output_scan");
         current = found + strlen("input");
     }
     strcat(outputName, current);
@@ -452,6 +453,24 @@ void readFile(char *fileName) { // function to read each individual input text f
     fclose(output);
 }
 
+// function to set currentScanFile to output_scan filename based on an input
+/*
+void getInputScanResultName(char *fileName){
+    char outputName[256] = "";
+    char* current = fileName;   
+    char* found;
+
+    while ((found = strstr(current, "input")) != NULL) { // replace all instances of input with output
+        strncat(outputName, current, found - current);
+        strcat(outputName, "output_scan");
+        current = found + strlen("input");
+    }
+    strcat(outputName, current);
+    currentScanFile = outputName;
+    // printf("scan file: %s\n", currentScanFile);
+}
+*/ 
+
 int main()
 {
     struct dirent *de;
@@ -462,6 +481,13 @@ int main()
 
         if (strstr(de->d_name, "input") != NULL && suffix != NULL && strcmp(suffix, ".txt") == 0) {
             readFile(de->d_name); // scan each valid file
+            
+            // kurt implementation: generate filename for output scan file and then parse it
+            /*
+            getInputScanResultName(de->d_name);
+            gettoken(currentScanFile);
+            Prg();
+            */
         }
     }
 
@@ -481,6 +507,7 @@ int main()
     // nextToken = tokens[counter];
     // printf("%s\n", tokens[counter]);
     // printf("%s\n", nextToken);
+    // gettoken("output.txt");
     gettoken("output.txt");
     Prg();
     return 0;
@@ -670,7 +697,6 @@ int Stm()
     }
     else
     {
-        printf("Invalid Statement\n");
         return 0;
     }
 }
