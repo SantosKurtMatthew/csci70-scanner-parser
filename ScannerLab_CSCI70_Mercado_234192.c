@@ -516,7 +516,7 @@ int Prg()
         }
         else
         {
-            // EndOfFile expected
+            printf("Symbol Expected\n");
             return 0;
         }
     }
@@ -620,25 +620,25 @@ int Stm()
                     }
                     else
                     {
-                        // Invalid Statement
+                        printf("Invalid Statement\n");
                         return 0;
                     }
                 }
                 else
                 {
-                    // Invalid Statement
+                    printf("Invalid Statement\n");
                     return 0;
                 }
             }
             else
             {
-                // Invalid Statement
+                printf("Invalid Statement\n");
                 return 0;
             }
         }
         else
         {
-            // Invalid Statement
+            printf("Invalid Statement\n");
             return 0;
         }
     }
@@ -660,35 +660,35 @@ int Stm()
                 {
                     if (Iffollow())
                     {
-                        // If Statement Ends
                         return 1;
                     }
                     else
                     {
-                        // Invalid Statement
                         return 0;
                     }
                 }
                 else
                 {
-                    // Invalid Statement
                     return 0;
                 }
             }
             else
             {
                 // Invalid Statement
+                printf("Invalid Statement\n");
                 return 0;
             }
         }
         else
         {
             // Invalid Statement
+            printf("Invalid Statement\n");
             return 0;
         }
     }
     else
     {
+        printf("Invalid Statement\n");
         return 0;
     }
 }
@@ -740,7 +740,7 @@ int Arg()
     }
     else
     {   
-        // String or Exp expected
+        printf("Symbol Expected\n");
         return 0;
     }
 }
@@ -764,6 +764,7 @@ int Iffollow()
         }
         else
         {
+            printf("Symbol Expected\n");
             return 0;
         }
     }
@@ -1024,7 +1025,6 @@ int Lit()
     }
     else
     {
-        printf("Not any LIT\n");
         return 0;
     }
 }
@@ -1070,6 +1070,7 @@ int Val()
                 else
                 {
                     // Symbol Expected
+                    printf("Symbol Expected\n");
                     return 0;
                 }
             }
@@ -1077,6 +1078,7 @@ int Val()
         else
         {
             // Symbol Expected
+            printf("Symbol Expected\n");
             return 0;
         }
     }
@@ -1099,6 +1101,7 @@ int Val()
             else
             {
                 // Symbol Expected
+                printf("Symbol Expected\n");
                 return 0;
             }
         }
@@ -1106,7 +1109,7 @@ int Val()
     else
     {
         // Symbol Expected
-        printf("Not any Val %s\n", nextToken);
+        printf("Symbol Expected\n");
         return 0;
     }
 }
