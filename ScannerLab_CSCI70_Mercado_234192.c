@@ -88,9 +88,6 @@ char *gettoken (char *fileName) {
     // printf("%s\n", nextToken);
     return token;
 }
-// testing from kurt
-char tokens[40][12] = {"If", "Identifier", "GTEqual", "Number", "Colon", "Identifier", "Assign", "LeftParen", "Minus", "Number", "Plus", "Sqrt", "LeftParen", "Identifier", "RightParen", "RightParen", "Divide", "LeftParen", "Number", "Multiply", "Number", "RightParen", "Semicolon", "Else", "Print", "LeftParen", "String", "RightParen", "Semicolon", "Endif","Semicolon", "Print", "LeftParen", "String", "RightParen", "Semicolon", "EndofFile"};
-int counter = 0;
 
 void readFile(char *fileName) { // function to read each individual input text file
     FILE *input = fopen(fileName, "r"); 
@@ -455,13 +452,6 @@ void readFile(char *fileName) { // function to read each individual input text f
     fclose(output);
 }
 
-int parseTokens()
-{
-    // char* nextToken
-
-
-}
-
 int main()
 {
     struct dirent *de;
@@ -493,14 +483,6 @@ int main()
     // printf("%s\n", nextToken);
     gettoken("output.txt");
     Prg();
-    return 0;
-}
-
-
-// Sample test function (this should be getToken in the actual implementation)
-int moveToNextToken(){
-    counter = counter + 1;
-    nextToken = tokens[counter];
     return 0;
 }
 
