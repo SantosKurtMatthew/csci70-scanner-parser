@@ -55,11 +55,41 @@ UNFINISHED  16. Rel
 #include <dirent.h>
 #include <string.h>
 
+<<<<<<< HEAD
 int Prg(), Blk(), Stm(), Argfollow(), Arg(), Iffollow(), Exp(), Trmfollow(), Trm(),
     Facfollow(), Fac(), Litfollow(), Lit(), Val(), Cnd(), Rel();
 
 char* nextToken;
 
+=======
+char *gettoken (char *fileName) {
+    static FILE *parseInput = NULL;
+    static char token[256];
+    char line[256];
+    if (parseInput == NULL) // open file if non opened yet
+    {    
+        parseInput = fopen(fileName, "r"); 
+    }
+
+    if (fgets(line, sizeof(line), parseInput) == NULL) {   // close upon end of file
+
+        fclose(parseInput);
+        parseInput = NULL;                          // no files opened
+        return NULL;
+    }
+
+    line[strcspn(line, "\n")] = '\0';          // strip newline
+
+    size_t len = strlen(line);
+    size_t typeLen = (len < 31) ? len : 31;
+    memcpy(token, line, typeLen);              // take only token from line (first 31 columns)
+    token[typeLen] = '\0';
+    for (int i = (int)typeLen - 1; i >= 0 && token[i] == ' '; i--)
+        token[i] = '\0';                       // remove padding (extra spaces after token)
+
+    return token;
+}
+>>>>>>> f9f8741dceacf47c651d669f7211e01f4a10401e
 void readFile(char *fileName) { // function to read each individual input text file
     FILE *input = fopen(fileName, "r"); 
     
@@ -76,8 +106,11 @@ void readFile(char *fileName) { // function to read each individual input text f
 
     FILE *output = fopen(outputName, "w");
 
+
     char ch;
     char State = 'A';
+    char identifier[256] = "";
+    size_t identifierLength = 0;
 
     while ((ch = fgetc(input)) != EOF) { // read file character by character
         void end() // function to end a token, switch back to starting state (A)
@@ -86,49 +119,63 @@ void readFile(char *fileName) { // function to read each individual input text f
             State = 'A';
         }
 
-        if (isspace(ch) && State != 'J') {
+        char *keywordCheck(char* identifier) // check if identifier is a keyword, return the proper token
+        {
+            if (strcmp(identifier, "PRINT") == 0) return "Print";
+            else if (strcmp(identifier, "IF") == 0) return "If";
+            else if (strcmp(identifier, "ELSE") == 0) return "Else";
+            else if (strcmp(identifier, "ENDIF") == 0) return "Endif";
+            else if (strcmp(identifier, "SQRT") == 0) return "Sqrt";
+            else if (strcmp(identifier, "AND") == 0) return "And";
+            else if (strcmp(identifier, "OR") == 0) return "Or";
+            else if (strcmp(identifier, "NOT") == 0) return "Not";
+            else return NULL;
+        }
+
+
+        if (isspace(ch) && State == 'A') {
             continue;
         }
         switch(State) {
             case 'A': // start state
                 if (isdigit(ch)) { // go to state B if next character is a digit
                     State = 'B';
-                    fprintf(output, "NUM     %c", ch);
+                    fprintf(output, "%-31s%c", "Number", ch);
                 }
 
                 // START OF TOKENS W/O PUSHBACK
                 else if (ch == '+') { // create PLUS token if next character is +
-                    fprintf(output, "PLUS    %c", ch);
+                    fprintf(output, "%-31s%c", "Plus", ch);
                     end();
                 }
 
                 else if (ch == '-') { // create MINUS token if next character is -
-                    fprintf(output, "MINUS   %c", ch);
+                    fprintf(output, "%-31s%c", "Minus", ch);
                     end();
                 }
 
                 else if (ch == ';') { // create SEMICOLON token if next character is ;
-                    fprintf(output, "Semicolon   %c", ch);
+                    fprintf(output, "%-31s%c", "Semicolon", ch);
                     end();
                 }
 
                 else if (ch == ',') { // create COMMA token if next character is ,
-                    fprintf(output, "Comma   %c", ch);
+                    fprintf(output, "%-31s%c", "Comma", ch);
                     end();
                 }
 
                 else if (ch == '(') { // create LeftParen token if next character is (
-                    fprintf(output, "LeftParen   %c", ch);
+                    fprintf(output, "%-31s%c", "LeftParen", ch);
                     end();
                 }
 
                 else if (ch == ')') { // create RightParen token if next character is )
-                    fprintf(output, "RightParen   %c", ch);
+                    fprintf(output, "%-31s%c", "RightParen", ch);
                     end();
                 }
 
                 else if (ch == '=') { // create Equal token if next character is =
-                    fprintf(output, "Equal   %c", ch);
+                    fprintf(output, "%-31s%c", "Equal", ch);
                     end();
                 }
 
@@ -161,13 +208,14 @@ void readFile(char *fileName) { // function to read each individual input text f
                 // IDENTIFIER
                 else if (isalpha(ch) != 0 || ch == '_') { // go to state I if next character is a letter or underscore (starting an identifier)
                     State = 'I';
-                    fprintf(output, "Identifier     %c", ch);
+                    identifier[identifierLength++] = ch;
+                    identifier[identifierLength] = '\0';
                 }
 
                 // STRING
                 else if (ch == '\"') { // go to state J if next character is " (starting a string)
                     State = 'J';
-                    fprintf(output, "String     %c", ch);
+                    fprintf(output, "%-31s%c", "String", ch);
                 }
 
                 // ERROR STATE
@@ -182,40 +230,39 @@ void readFile(char *fileName) { // function to read each individual input text f
 
             case 'C': // state for creating Multiply/Raise token 
                 if (ch == '*') { // if * again, thats a RAISE token
-                    fprintf(output, "Raise   **");
+                    fprintf(output, "%-31s%s", "Raise", "**");
                     end();
                 }
 
                 else { // anything else terminates as a MULTIPLY token
                     ungetc(ch, input);
-                    fprintf(output, "Multiply   *");
+                    fprintf(output, "%-31s%c", "Multiply", '*');
                     end();
                 }
                 State = 'A';
                 break;
 
-            case 'D': // state for creating Multiply/Raise token 
-                if (ch == '/') { // if * again, thats a COMMENT token
-                    fprintf(output, "Comment   //");
-                    end();
+            case 'D': // state for creating Divide/Comment
+                if (ch == '/') { // if / again, thats a COMMENT token
+                    State = 'P';
                 }
 
                 else { // anything else terminates as a DIVIDE token
                     ungetc(ch, input);
-                    fprintf(output, "Divide   /");
+                    fprintf(output, "%-31s%c", "Divide", '/');
                     end();
+                    State = 'A';
                 }
-                State = 'A';
                 break;
             
             case 'E':
                 if (ch == '=') { 
-                    fprintf(output, "ASSIGN  :="); // end ASSIGN token if '=' is found
+                    fprintf(output, "%-31s%s", "Assign", ":="); // end ASSIGN token if '=' is found
                     end();
                 }
                 else { // anything else terminates as a COLON token
                     ungetc(ch, input);
-                    fprintf(output, "Colon   :");
+                    fprintf(output, "%-31s%c", "Colon", ':');
                     end();
                 }
 
@@ -223,13 +270,13 @@ void readFile(char *fileName) { // function to read each individual input text f
 
             case 'F': // state for creating LTEqual/LessThan tokens
                 if (ch == '=') { // if <= thats LTEqual token
-                    fprintf(output, "LTEqual   <=");
+                    fprintf(output, "%-31s%s", "LTEqual", "<=");
                     end();
                 }
 
                 else { // anything else terminates as a LessThan token
                     ungetc(ch, input);
-                    fprintf(output, "LessThan   <");
+                    fprintf(output, "%-31s%c", "LessThan", '<');
                     end();
                 }
                 State = 'A';
@@ -237,13 +284,13 @@ void readFile(char *fileName) { // function to read each individual input text f
 
             case 'G': // state for creating GTEqual/GreaterThan tokens
                 if (ch == '=') { // if <= thats LTEqual token
-                    fprintf(output, "GTEqual   >=");
+                    fprintf(output, "%-31s%s", "GTEqual", ">=");
                     end();
                 }
 
                 else { // anything else terminates as a GreaterThan token
                     ungetc(ch, input);
-                    fprintf(output, "GreaterThan   >");
+                    fprintf(output, "%-31s%c", "GreaterThan", '>');
                     end();
                 }
                 State = 'A';
@@ -251,7 +298,7 @@ void readFile(char *fileName) { // function to read each individual input text f
             
             case 'H': // state for creating NotEqual token
                 if (ch == '=') { // if != thats NotEqual token
-                    fprintf(output, "NotEqual   !=");
+                    fprintf(output, "%-31s%s", "NotEqual", "!=");
                     end();
                 }
 
@@ -262,12 +309,36 @@ void readFile(char *fileName) { // function to read each individual input text f
                 break;
 
             case 'I': // state for creating Identifier token
-                if (isalpha(ch) != 0 || isdigit(ch) != 0 || ch == '_'){ // checks if the character is a number, letter, or underscore
-                    State = 'I';
-                    fprintf(output, "%c", ch);
-                }
-                else{
+                char* token = keywordCheck(identifier);
+                if (token != NULL)
+                {
+                    fprintf(output, "%-31s%s", token, identifier);
                     ungetc(ch, input);
+                    identifier[0] = '\0';
+                    identifierLength = 0;
+                    end();
+                }
+    
+                else if (isalpha(ch) != 0 || isdigit(ch) != 0 || ch == '_'){ // checks if the character is a number, letter, or underscore
+                    State = 'I';
+                    identifier[identifierLength++] = ch;
+                    identifier[identifierLength] = '\0';
+                }
+
+                else{
+                    char* token = keywordCheck(identifier);
+                    if (token != NULL)
+                    {
+                        fprintf(output, "%-31s%s", token, identifier);
+                    }
+
+                    else 
+                    {
+                        fprintf(output, "%-31s%s", "Identifier", identifier);
+                    }
+                    ungetc(ch, input);
+                    identifier[0] = '\0';
+                    identifierLength = 0;
                     end();
                 }
                 break;
@@ -364,22 +435,33 @@ void readFile(char *fileName) { // function to read each individual input text f
                     end();
                 }
                 break;
+            
+            case 'P': // ignore all text while comment is ongoing
+                if (ch == '\n')
+                {
+                    State = 'A';
+                }
                 
 
             case 'S': // state that handles errors, stop output
                 break;
         }
     }
+    fprintf(output, "%-31s\n", "EndofFile");
 
     fclose(input);
+    fclose(output);
 }
 
+<<<<<<< HEAD
 int parseTokens()
 {
     // char* nextToken
 
 
 }
+=======
+>>>>>>> f9f8741dceacf47c651d669f7211e01f4a10401e
 
 int main()
 {
@@ -395,9 +477,21 @@ int main()
     }
 
     closedir(folder);    
+
+    printf("%s\n", gettoken("output.txt"));
+        printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
+
+
     return 0;
 }
 
+<<<<<<< HEAD
 int Prg()
 {
     if (Blk())
@@ -949,3 +1043,5 @@ int Rel()
         return 0;
      }
 }
+=======
+>>>>>>> f9f8741dceacf47c651d669f7211e01f4a10401e
