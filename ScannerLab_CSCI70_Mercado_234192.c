@@ -87,7 +87,7 @@ char *gettoken (char *fileName) {
     return token;
 }
 // testing from kurt
-char tokens[15][12] = {"Identifier", "Assign", "Number", "Raise", "Number", "Minus", "LeftParen", "Number", "Multiply", "LeftParen", "Minus", "Number", "RightParen", "RightParen","Semicolon"};
+char tokens[30][12] = {"If", "Identifier", "GTEqual", "Number", "Colon", "Identifier", "Assign", "LeftParen", "Minus", "Number", "Plus", "Sqrt", "LeftParen", "Identifier", "RightParen", "RightParen", "Divide", "LeftParen", "Number", "Multiply", "Number", "RightParen", "Semicolon", "Endif","Semicolon", "EndofFile"};
 int counter = 0;
 
 void readFile(char *fileName) { // function to read each individual input text file
@@ -503,12 +503,12 @@ int moveToNextToken(){
 
 int Prg()
 {
-    printf("PRG CALLED\n");
+    printf("PRG called\n");
     if (Blk())
     {
         if (strcmp(nextToken, "EndofFile") == 0)
         {
-            // [filename] is a valid SimpCalc program
+            printf("[filename] is a valid SimpCalc program\n");
             return 1;
         }
         else
@@ -525,7 +525,7 @@ int Prg()
 
 int Blk()
 {
-    printf("BLK CALLED\n");
+    printf("BLK called\n");
     if (Stm())
     {
         if (Blk())
@@ -545,16 +545,16 @@ int Blk()
 
 int Stm()
 {
-    printf("STM CALLED\n");
+    printf("STM called\n");
     if (strcmp(nextToken, "Identifier") == 0)
     {
-        printf("IDENTIFIER DETECTED\n");
+        printf("IDENTIFIER DETECTED !!!\n");
         moveToNextToken();
         printf("NextToken: %s\n", nextToken);
 
         if (strcmp(nextToken, "Assign") == 0)
         {
-            printf("ASSIGN DETECTED\n");
+            printf("ASSIGN DETECTED !!!\n");
             moveToNextToken();
             printf("NextToken: %s\n", nextToken);
 
@@ -641,15 +641,23 @@ int Stm()
     }
     else if (strcmp(nextToken, "If") == 0)
     {
+        printf("IF DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         if (Cnd())
         {
             if (strcmp(nextToken, "Colon") == 0)
             {
+                printf("COLON DETECTED !!!\n");
+                printf("IF STATEMENT BEGINS\n");
+                moveToNextToken();
+                printf("NextToken: %s\n", nextToken);
+                
                 if (Blk())
                 {
                     if (Iffollow())
                     {
-                        // If Statement Begins
+                        // If Statement Ends
                         return 1;
                     }
                     else
@@ -678,8 +686,6 @@ int Stm()
     }
     else
     {
-        // Invalid Statement
-        printf("Invalid Statement\n");
         return 0;
     }
 }
@@ -689,7 +695,10 @@ int Argfollow()
 
     if (strcmp(nextToken, "Comma") == 0)
     {
- 
+        printf("COMMA DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
+
         if (Arg())
         {
             if(Argfollow())
@@ -717,6 +726,9 @@ int Arg()
 
     if (strcmp(nextToken, "String") == 0)
     {
+        printf("STRING DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         return 1;
     }
     else if (Exp())
@@ -735,11 +747,16 @@ int Iffollow()
 
     if (strcmp(nextToken, "Endif") == 0)
     {
+        printf("ENDIF DETECTED !!!\n");
         moveToNextToken();
         printf("NextToken: %s\n", nextToken);
         if (strcmp(nextToken, "Semicolon") == 0)
         {
             // If Statement Ends
+            printf("SEMICOLON DETECTED !!!\n");
+            printf("IF STATEMENT ENDS\n");
+            moveToNextToken();
+            printf("NextToken: %s\n", nextToken);
             return 1;
         }
         else
@@ -749,15 +766,24 @@ int Iffollow()
     }
     else if (strcmp(nextToken, "Else") == 0)
     {
+        printf("ELSE DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
+
         if (Blk())
         {
-            moveToNextToken();
-            printf("NextToken: %s\n", nextToken);
             if (strcmp(nextToken, "Endif") == 0)
             {
+                printf("ENDIF DETECTED !!!\n");
+                moveToNextToken();
+                printf("NextToken: %s\n", nextToken);
+
                 if (strcmp(nextToken, "Semicolon") == 0)
                 {
                     // If Statement Ends
+                    printf("SEMICOLON DETECTED !!!\n");
+                    moveToNextToken();
+                    printf("NextToken: %s\n", nextToken);
                     return 1;
                 }
                 else
@@ -811,6 +837,9 @@ int Trmfollow()
     
     if (strcmp(nextToken, "Plus") == 0)
     {
+        printf("PLUS DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         if (Trm())
         {
             if (Trmfollow())
@@ -829,7 +858,7 @@ int Trmfollow()
     }
     else if (strcmp(nextToken, "Minus") == 0)
     {
-        printf("MINUS DETECTED\n");
+        printf("MINUS DETECTED !!!\n");
         moveToNextToken();
         printf("NextToken: %s\n", nextToken);
         if (Trm())
@@ -896,6 +925,9 @@ int Facfollow()
     }
     else if (strcmp(nextToken, "Divide") == 0)
     {
+        printf("DIVIDE DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         if (Fac())
         {
             if (Facfollow())
@@ -939,7 +971,7 @@ int Litfollow()
     printf("Litfollow called\n");
     if (strcmp(nextToken, "Raise") == 0)
     {
-        printf("RAISE DETECTED\n");
+        printf("RAISE DETECTED !!!\n");
         moveToNextToken();
         printf("NextToken: %s\n", nextToken);
         if (Lit())
@@ -998,6 +1030,9 @@ int Val()
     printf("VAL called\n");
     if (strcmp(nextToken, "Identifier") == 0)
     {
+        printf("IDENTIFIER DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         return 1;
     }
     else if (strcmp(nextToken, "Number") == 0)
@@ -1009,12 +1044,23 @@ int Val()
     }
     else if (strcmp(nextToken, "Sqrt") == 0)
     {
+        printf("SQRT DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
+
         if (strcmp(nextToken, "LeftParen") == 0)
         {
+            printf("LEFTPAREN DETECTED !!!\n");
+            moveToNextToken();
+            printf("NextToken: %s\n", nextToken);
+
             if (Exp())
             {
                 if (strcmp(nextToken, "RightParen") == 0)
                 {
+                    printf("RIGHTPAREN DETECTED !!!\n");
+                    moveToNextToken();
+                    printf("NextToken: %s\n", nextToken);
                     return 1;
                 }
                 else
@@ -1056,17 +1102,23 @@ int Val()
     else
     {
         // Symbol Expected
-        printf("Not any Val\n");
+        printf("Not any Val %s\n", nextToken);
         return 0;
     }
 }
 
 int Cnd()
 {
+    printf("CND called\n");
     if (Exp())
     {
+        printf("CND EXP FOUND\n");
         if (Rel())
         {
+            printf("REL DETECTED !!!\n");
+            moveToNextToken();
+            printf("NextToken: %s\n", nextToken);
+
             if (Exp())
             {
                 return 1;
@@ -1090,6 +1142,7 @@ int Cnd()
 
 int Rel()
 {
+    printf("REL called\n");
     if(strcmp(nextToken, "LessThan") == 0){ return 1; }
     else if(strcmp(nextToken, "Equal") == 0){ return 1; }
     else if(strcmp(nextToken, "GreaterThan") == 0){ return 1; }
