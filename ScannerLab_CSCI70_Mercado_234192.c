@@ -59,6 +59,7 @@ int Prg(), Blk(), Stm(), Argfollow(), Arg(), Iffollow(), Exp(), Trmfollow(), Trm
 
 char* nextToken;
 char* currentScanFile;
+FILE *parse_Output;
 
 char *gettoken (char *fileName) {
     // printf("file: %s\n", fileName);
@@ -485,9 +486,22 @@ void parseFile(char *fileName){
     strcat(scanFile, current);
     currentScanFile = scanFile;
 
+
+    // Kurt trying to write to output files
+    char outputName[256] = "";
+    while ((found = strstr(current, "input")) != NULL) { // replace all instances of input with output
+        strncat(outputName, current, found - current);
+        strcat(outputName, "output_parse");
+        current = found + strlen("input");
+    }
+    strcat(outputName, current);
+    parse_Output = fopen(outputName, "w");
+
     gettoken(currentScanFile);
     Prg(fileName);
     // printf("scan file: %s\n", currentScanFile);
+    // fclose(input);
+    fclose(parse_Output);
 }
 
 
@@ -597,6 +611,7 @@ int Stm()
                 if (strcmp(nextToken, "Semicolon") == 0)
                 {
                     printf("Assignment Statement Recognized\n");
+                    fprintf(parse_Output, "Assignment Statement Recognized\n");
                     gettoken(currentScanFile);
                     // printf("NextToken: %s\n", nextToken);
                     return 1;
