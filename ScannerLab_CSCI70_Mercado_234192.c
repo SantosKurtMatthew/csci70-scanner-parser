@@ -63,18 +63,34 @@ char* currentScanFile;
 char *gettoken (char *fileName) {
     static FILE *parseInput = NULL;
     static char token[256];
+    static char parseFileName[256];
     char line[256];
-    if (parseInput == NULL) // open file if non opened yet
-    {    
-        parseInput = fopen(fileName, "r"); 
+
+    // check if given file is different than previously opened file, close previous if yes
+    if (parseInput != NULL && strcmp(parseFileName, fileName) != 0) {
+        fclose(parseInput);
+        parseInput = NULL;
     }
 
-    if (fgets(line, sizeof(line), parseInput) == NULL) {   // close upon end of file
+    // open file if not opened yet
+    if (parseInput == NULL) 
+    {
+        parseInput = fopen(fileName, "r");  
+        if (parseInput == NULL)
+            return NULL;
+
+        strcpy(parseFileName, fileName);
+    }
+
+    // close upon end of file
+    if (fgets(line, sizeof(line), parseInput) == NULL) {   
 
         fclose(parseInput);
-        parseInput = NULL;                          // no files opened
+        parseInput = NULL;                          
         return NULL;
     }
+
+    
 
     line[strcspn(line, "\n")] = '\0';          // strip newline
 
