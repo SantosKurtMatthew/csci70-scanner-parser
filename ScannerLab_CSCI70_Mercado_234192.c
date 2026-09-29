@@ -61,6 +61,7 @@ char* nextToken;
 char* currentScanFile;
 
 char *gettoken (char *fileName) {
+    // printf("file: %s\n", fileName);
     static FILE *parseInput = NULL;
     static char token[256];
     static char parseFileName[256];
@@ -102,7 +103,7 @@ char *gettoken (char *fileName) {
         token[i] = '\0';                       // remove padding (extra spaces after token)
 
     nextToken = token;
-    // printf("%s\n", nextToken);
+    // printf("token: %s\n", nextToken);
     return token;
 }
 
@@ -470,22 +471,25 @@ void readFile(char *fileName) { // function to read each individual input text f
 }
 
 // function to set currentScanFile to output_scan filename based on an input
-/*
-void getInputScanResultName(char *fileName){
-    char outputName[256] = "";
+
+void parseFile(char *fileName){
+    char scanFile[256] = "";
     char* current = fileName;   
     char* found;
 
     while ((found = strstr(current, "input")) != NULL) { // replace all instances of input with output
-        strncat(outputName, current, found - current);
-        strcat(outputName, "output_scan");
+        strncat(scanFile, current, found - current);
+        strcat(scanFile, "output_scan");
         current = found + strlen("input");
     }
-    strcat(outputName, current);
-    currentScanFile = outputName;
+    strcat(scanFile, current);
+    currentScanFile = scanFile;
+
+    gettoken(currentScanFile);
+    Prg(fileName);
     // printf("scan file: %s\n", currentScanFile);
 }
-*/ 
+
 
 int main()
 {
@@ -499,11 +503,11 @@ int main()
             readFile(de->d_name); // scan each valid file
             
             // kurt implementation: generate filename for output scan file and then parse it
-            /*
-            getInputScanResultName(de->d_name);
-            gettoken(currentScanFile);
-            Prg();
-            */
+            printf("____________input: %s____________________\n", de->d_name);
+            parseFile(de->d_name);
+            // gettoken(currentScanFile);
+            // Prg();
+            
         }
     }
 
@@ -524,19 +528,20 @@ int main()
     // printf("%s\n", tokens[counter]);
     // printf("%s\n", nextToken);
     // gettoken("output.txt");
-    gettoken("output.txt");
-    Prg();
+
+    // gettoken("output.txt");
+    // Prg();
     return 0;
 }
 
-int Prg()
+int Prg(char *fileName)
 {
     // printf("PRG called\n");
     if (Blk())
     {
         if (strcmp(nextToken, "EndofFile") == 0)
         {
-            printf("[filename] is a valid SimpCalc program\n");
+            printf("%s is a valid SimpCalc program\n", fileName);
             return 1;
         }
         else
@@ -577,13 +582,14 @@ int Stm()
     if (strcmp(nextToken, "Identifier") == 0)
     {
         // printf("IDENTIFIER DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
+        // printf("STM CALL \n");
         // printf("NextToken: %s\n", nextToken);
 
         if (strcmp(nextToken, "Assign") == 0)
         {
             // printf("ASSIGN DETECTED !!!\n");
-            gettoken("output.txt");
+            gettoken(currentScanFile);
             // printf("NextToken: %s\n", nextToken);
 
             if (Exp())
@@ -591,7 +597,7 @@ int Stm()
                 if (strcmp(nextToken, "Semicolon") == 0)
                 {
                     printf("Assignment Statement Recognized\n");
-                    gettoken("output.txt");
+                    gettoken(currentScanFile);
                     // printf("NextToken: %s\n", nextToken);
                     return 1;
                 }
@@ -616,13 +622,13 @@ int Stm()
     else if (strcmp(nextToken, "Print") == 0)
     {
         // printf("PRINT DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
 
         if (strcmp(nextToken, "LeftParen") == 0)
         {
             // printf("LEFTPAREN DETECTED !!!\n");
-            gettoken("output.txt");
+            gettoken(currentScanFile);
             // printf("NextToken: %s\n", nextToken);
 
             if (Arg())
@@ -632,12 +638,12 @@ int Stm()
                     if (strcmp(nextToken, "RightParen") == 0)
                     {
                         // printf("RIGHTPAREN DETECTED !!!\n");
-                        gettoken("output.txt");
+                        gettoken(currentScanFile);
                         // printf("NextToken: %s\n", nextToken);
                         if (strcmp(nextToken, "Semicolon") == 0)
                         {
                             // printf("SEMICOLON DETECTED !!!\n");
-                            gettoken("output.txt");
+                            gettoken(currentScanFile);
                             // printf("NextToken: %s\n", nextToken);
                             printf("Print Statement Recognized\n");
                             return 1;
@@ -670,15 +676,15 @@ int Stm()
     else if (strcmp(nextToken, "If") == 0)
     {
         // printf("IF DETECTED !!!\n");
-        gettoken("output.txt");
+        printf("If Statement Begins\n");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         if (Cnd())
         {
             if (strcmp(nextToken, "Colon") == 0)
             {
                 // printf("COLON DETECTED !!!\n");
-                printf("If Statement Begins\n");
-                gettoken("output.txt");
+                gettoken(currentScanFile);
                 // printf("NextToken: %s\n", nextToken);
                 
                 if (Blk())
@@ -723,7 +729,7 @@ int Argfollow()
     if (strcmp(nextToken, "Comma") == 0)
     {
         // printf("COMMA DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
 
         if (Arg())
@@ -754,7 +760,7 @@ int Arg()
     if (strcmp(nextToken, "String") == 0)
     {
         // printf("STRING DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         return 1;
     }
@@ -775,14 +781,14 @@ int Iffollow()
     if (strcmp(nextToken, "Endif") == 0)
     {
         // printf("ENDIF DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         if (strcmp(nextToken, "Semicolon") == 0)
         {
             // If Statement Ends
             // printf("SEMICOLON DETECTED !!!\n");
             printf("If Statement Ends\n");
-            gettoken("output.txt");
+            gettoken(currentScanFile);
             // printf("NextToken: %s\n", nextToken);
             return 1;
         }
@@ -795,7 +801,7 @@ int Iffollow()
     else if (strcmp(nextToken, "Else") == 0)
     {
         // printf("ELSE DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
 
         if (Blk())
@@ -803,7 +809,7 @@ int Iffollow()
             if (strcmp(nextToken, "Endif") == 0)
             {
                 // printf("ENDIF DETECTED !!!\n");
-                gettoken("output.txt");
+                gettoken(currentScanFile);
                 // printf("NextToken: %s\n", nextToken);
 
                 if (strcmp(nextToken, "Semicolon") == 0)
@@ -811,7 +817,7 @@ int Iffollow()
                     // If Statement Ends
                     // printf("SEMICOLON DETECTED !!!\n");
                     printf("If Statement Ends\n");
-                    gettoken("output.txt");
+                    gettoken(currentScanFile);
                     // printf("NextToken: %s\n", nextToken);
                     return 1;
                 }
@@ -867,7 +873,7 @@ int Trmfollow()
     if (strcmp(nextToken, "Plus") == 0)
     {
         // printf("PLUS DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         if (Trm())
         {
@@ -888,7 +894,7 @@ int Trmfollow()
     else if (strcmp(nextToken, "Minus") == 0)
     {
         // printf("MINUS DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         if (Trm())
         {
@@ -938,7 +944,7 @@ int Facfollow()
     if (strcmp(nextToken, "Multiply") == 0)
     {
         // printf("MULTIPLY DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         if (Fac())
         {
@@ -955,7 +961,7 @@ int Facfollow()
     else if (strcmp(nextToken, "Divide") == 0)
     {
         // printf("DIVIDE DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         if (Fac())
         {
@@ -1001,7 +1007,7 @@ int Litfollow()
     if (strcmp(nextToken, "Raise") == 0)
     {
         // printf("RAISE DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         if (Lit())
         {
@@ -1031,7 +1037,7 @@ int Lit()
     if (strcmp(nextToken, "Minus") == 0)
     {
         // printf("MINUS DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         if (Val())
         {
@@ -1059,27 +1065,27 @@ int Val()
     if (strcmp(nextToken, "Identifier") == 0)
     {
         // printf("IDENTIFIER DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         return 1;
     }
     else if (strcmp(nextToken, "Number") == 0)
     {
         // printf("NUMBER DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         return 1;
     }
     else if (strcmp(nextToken, "Sqrt") == 0)
     {
         // printf("SQRT DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
 
         if (strcmp(nextToken, "LeftParen") == 0)
         {
             // printf("LEFTPAREN DETECTED !!!\n");
-            gettoken("output.txt");
+            gettoken(currentScanFile);
             // printf("NextToken: %s\n", nextToken);
 
             if (Exp())
@@ -1087,7 +1093,7 @@ int Val()
                 if (strcmp(nextToken, "RightParen") == 0)
                 {
                     // printf("RIGHTPAREN DETECTED !!!\n");
-                    gettoken("output.txt");
+                    gettoken(currentScanFile);
                     // printf("NextToken: %s\n", nextToken);
                     return 1;
                 }
@@ -1110,7 +1116,7 @@ int Val()
     {
         //nextToken++
         // printf("LEFTPAREN DETECTED !!!\n");
-        gettoken("output.txt");
+        gettoken(currentScanFile);
         // printf("NextToken: %s\n", nextToken);
         if (Exp())
         {
@@ -1118,7 +1124,7 @@ int Val()
             if (strcmp(nextToken, "RightParen") == 0)
             {
                 // printf("RIGHTPAREN DETECTED !!!\n");
-                gettoken("output.txt");
+                gettoken(currentScanFile);
                 // printf("NextToken: %s\n", nextToken);
                 return 1;
             }
@@ -1147,7 +1153,7 @@ int Cnd()
         if (Rel())
         {
             // printf("REL DETECTED !!!\n");
-            gettoken("output.txt");
+            gettoken(currentScanFile);
             // printf("NextToken: %s\n", nextToken);
 
             if (Exp())
