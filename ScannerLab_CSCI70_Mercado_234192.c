@@ -87,7 +87,7 @@ char *gettoken (char *fileName) {
     return token;
 }
 // testing from kurt
-char tokens[40][12] = {"If", "Identifier", "GTEqual", "Number", "Colon", "Identifier", "Assign", "LeftParen", "Minus", "Number", "Plus", "Sqrt", "LeftParen", "Identifier", "RightParen", "RightParen", "Divide", "LeftParen", "Number", "Multiply", "Number", "RightParen", "Semicolon", "Endif","Semicolon", "Print", "LeftParen", "String", "RightParen", "Semicolon", "EndofFile"};
+char tokens[40][12] = {"If", "Identifier", "GTEqual", "Number", "Colon", "Identifier", "Assign", "LeftParen", "Minus", "Number", "Plus", "Sqrt", "LeftParen", "Identifier", "RightParen", "RightParen", "Divide", "LeftParen", "Number", "Multiply", "Number", "RightParen", "Semicolon", "Else", "Print", "LeftParen", "String", "RightParen", "Semicolon", "Endif","Semicolon", "Print", "LeftParen", "String", "RightParen", "Semicolon", "EndofFile"};
 int counter = 0;
 
 void readFile(char *fileName) { // function to read each individual input text file
@@ -782,6 +782,7 @@ int Iffollow()
                 {
                     // If Statement Ends
                     printf("SEMICOLON DETECTED !!!\n");
+                    printf("IF STATEMENT ENDS\n");
                     moveToNextToken();
                     printf("NextToken: %s\n", nextToken);
                     return 1;
