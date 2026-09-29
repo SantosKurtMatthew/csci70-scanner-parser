@@ -87,7 +87,7 @@ char *gettoken (char *fileName) {
     return token;
 }
 // testing from kurt
-char tokens[30][12] = {"If", "Identifier", "GTEqual", "Number", "Colon", "Identifier", "Assign", "LeftParen", "Minus", "Number", "Plus", "Sqrt", "LeftParen", "Identifier", "RightParen", "RightParen", "Divide", "LeftParen", "Number", "Multiply", "Number", "RightParen", "Semicolon", "Endif","Semicolon", "EndofFile"};
+char tokens[40][12] = {"If", "Identifier", "GTEqual", "Number", "Colon", "Identifier", "Assign", "LeftParen", "Minus", "Number", "Plus", "Sqrt", "LeftParen", "Identifier", "RightParen", "RightParen", "Divide", "LeftParen", "Number", "Multiply", "Number", "RightParen", "Semicolon", "Endif","Semicolon", "Print", "LeftParen", "String", "RightParen", "Semicolon", "EndofFile"};
 int counter = 0;
 
 void readFile(char *fileName) { // function to read each individual input text file
@@ -587,11 +587,13 @@ int Stm()
     }
     else if (strcmp(nextToken, "Print") == 0)
     {
+        printf("PRINT DETECTED !!!\n");
         moveToNextToken();
         printf("NextToken: %s\n", nextToken);
 
         if (strcmp(nextToken, "LeftParen") == 0)
         {
+            printf("LEFTPAREN DETECTED !!!\n");
             moveToNextToken();
             printf("NextToken: %s\n", nextToken);
 
@@ -599,19 +601,17 @@ int Stm()
             {
                 if (Argfollow())
                 {
-                    moveToNextToken();
-                    printf("NextToken: %s\n", nextToken);
-
                     if (strcmp(nextToken, "RightParen") == 0)
                     {
+                        printf("RIGHTPAREN DETECTED !!!\n");
                         moveToNextToken();
                         printf("NextToken: %s\n", nextToken);
                         if (strcmp(nextToken, "Semicolon") == 0)
                         {
+                            printf("SEMICOLON DETECTED !!!\n");
                             moveToNextToken();
                             printf("NextToken: %s\n", nextToken);
-                            moveToNextToken();
-                            printf("Print Statement Recognized");
+                            printf("Print Statement Recognized\n");
                             return 1;
                         }
                     }
@@ -1130,7 +1130,7 @@ int Cnd()
         }
         else
         {
-            // Missing relational operator
+            printf("Missing Relational Operator\n");
             return 0;
         }
     }
