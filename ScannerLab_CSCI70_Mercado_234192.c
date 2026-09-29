@@ -60,7 +60,7 @@ int Prg(), Blk(), Stm(), Argfollow(), Arg(), Iffollow(), Exp(), Trmfollow(), Trm
 char* nextToken;
 
 // testing from kurt
-char tokens[4][12] = {"Identifier", "Assign", "Number", "Semicolon"};
+char tokens[15][12] = {"Identifier", "Assign", "Number", "Raise", "Number", "Minus", "LeftParen", "Number", "Multiply", "LeftParen", "Minus", "Number", "RightParen", "RightParen","Semicolon"};
 int counter = 0;
 
 void readFile(char *fileName) { // function to read each individual input text file
@@ -462,23 +462,23 @@ int Stm()
     printf("STM CALLED\n");
     if (strcmp(nextToken, "Identifier") == 0)
     {
-        printf("Identifier Found Yay\n");
+        printf("IDENTIFIER DETECTED\n");
         moveToNextToken();
         printf("NextToken: %s\n", nextToken);
 
         if (strcmp(nextToken, "Assign") == 0)
         {
-            printf("Assign Found Yay\n");
+            printf("ASSIGN DETECTED\n");
             moveToNextToken();
             printf("NextToken: %s\n", nextToken);
 
             if (Exp())
             {
-                moveToNextToken();
-                printf("NextToken: %s\n", nextToken);
                 if (strcmp(nextToken, "Semicolon") == 0)
                 {
                     printf("Assignment Statement Recognized\n");
+                    moveToNextToken();
+                    printf("NextToken: %s\n", nextToken);
                     return 1;
                 }
                 else
@@ -501,17 +501,31 @@ int Stm()
     }
     else if (strcmp(nextToken, "PRINT") == 0)
     {
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
+
         if (strcmp(nextToken, "LeftParen") == 0)
         {
+            moveToNextToken();
+            printf("NextToken: %s\n", nextToken);
+
             if (Arg())
             {
                 if (Argfollow())
                 {
+                    moveToNextToken();
+                    printf("NextToken: %s\n", nextToken);
+
                     if (strcmp(nextToken, "RightParen") == 0)
                     {
+                        moveToNextToken();
+                        printf("NextToken: %s\n", nextToken);
                         if (strcmp(nextToken, "Semicolon") == 0)
                         {
-                            // Print Statement Recognized
+                            moveToNextToken();
+                            printf("NextToken: %s\n", nextToken);
+                            moveToNextToken();
+                            printf("Print Statement Recognized");
                             return 1;
                         }
                     }
@@ -579,15 +593,17 @@ int Stm()
     else
     {
         // Invalid Statement
-        printf("Identifier Not found </3\n");
+        printf("Invalid Statement\n");
         return 0;
     }
 }
 
 int Argfollow()
 {
+
     if (strcmp(nextToken, "Comma") == 0)
     {
+ 
         if (Arg())
         {
             if(Argfollow())
@@ -612,6 +628,7 @@ int Argfollow()
 
 int Arg()
 {
+
     if (strcmp(nextToken, "String") == 0)
     {
         return 1;
@@ -629,8 +646,11 @@ int Arg()
 
 int Iffollow()
 {
+
     if (strcmp(nextToken, "ENDIF") == 0)
     {
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         if (strcmp(nextToken, "Semicolon") == 0)
         {
             // If Statement Ends
@@ -645,6 +665,8 @@ int Iffollow()
     {
         if (Blk())
         {
+            moveToNextToken();
+            printf("NextToken: %s\n", nextToken);
             if (strcmp(nextToken, "ENDIF") == 0)
             {
                 if (strcmp(nextToken, "Semicolon") == 0)
@@ -699,6 +721,8 @@ int Exp()
 
 int Trmfollow()
 {
+    printf("Trmfollow called for %s\n", nextToken);
+    
     if (strcmp(nextToken, "Plus") == 0)
     {
         if (Trm())
@@ -719,6 +743,9 @@ int Trmfollow()
     }
     else if (strcmp(nextToken, "Minus") == 0)
     {
+        printf("MINUS DETECTED\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         if (Trm())
         {
             if (Trmfollow())
@@ -763,8 +790,12 @@ int Trm()
 
 int Facfollow()
 {
+    printf("Facfollow called\n");
     if (strcmp(nextToken, "Multiply") == 0)
     {
+        printf("MULTIPLY DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         if (Fac())
         {
             if (Facfollow())
@@ -819,8 +850,12 @@ int Fac()
 
 int Litfollow()
 {
+    printf("Litfollow called\n");
     if (strcmp(nextToken, "Raise") == 0)
     {
+        printf("RAISE DETECTED\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         if (Lit())
         {
             if (Litfollow())
@@ -848,6 +883,9 @@ int Lit()
     printf("LIT called\n");
     if (strcmp(nextToken, "Minus") == 0)
     {
+        printf("MINUS DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         if (Val())
         {
             return 1;
@@ -859,10 +897,12 @@ int Lit()
     }
     else if (Val())
     {
+        printf("Val from Lit\n");
         return 1;
     }
     else
     {
+        printf("Not any LIT\n");
         return 0;
     }
 }
@@ -877,6 +917,8 @@ int Val()
     else if (strcmp(nextToken, "Number") == 0)
     {
         printf("NUMBER DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         return 1;
     }
     else if (strcmp(nextToken, "SQRT") == 0)
@@ -905,11 +947,17 @@ int Val()
     else if (strcmp(nextToken, "LeftParen") == 0)
     {
         //nextToken++
+        printf("LEFTPAREN DETECTED !!!\n");
+        moveToNextToken();
+        printf("NextToken: %s\n", nextToken);
         if (Exp())
         {
             //nextToken++
             if (strcmp(nextToken, "RightParen") == 0)
             {
+                printf("RIGHTPAREN DETECTED !!!\n");
+                moveToNextToken();
+                printf("NextToken: %s\n", nextToken);
                 return 1;
             }
             else
@@ -922,6 +970,7 @@ int Val()
     else
     {
         // Symbol Expected
+        printf("Not any Val\n");
         return 0;
     }
 }
