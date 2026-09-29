@@ -55,13 +55,11 @@ UNFINISHED  16. Rel
 #include <dirent.h>
 #include <string.h>
 
-<<<<<<< HEAD
 int Prg(), Blk(), Stm(), Argfollow(), Arg(), Iffollow(), Exp(), Trmfollow(), Trm(),
     Facfollow(), Fac(), Litfollow(), Lit(), Val(), Cnd(), Rel();
 
 char* nextToken;
 
-=======
 char *gettoken (char *fileName) {
     static FILE *parseInput = NULL;
     static char token[256];
@@ -89,7 +87,6 @@ char *gettoken (char *fileName) {
 
     return token;
 }
->>>>>>> f9f8741dceacf47c651d669f7211e01f4a10401e
 void readFile(char *fileName) { // function to read each individual input text file
     FILE *input = fopen(fileName, "r"); 
     
@@ -453,15 +450,12 @@ void readFile(char *fileName) { // function to read each individual input text f
     fclose(output);
 }
 
-<<<<<<< HEAD
 int parseTokens()
 {
     // char* nextToken
 
 
 }
-=======
->>>>>>> f9f8741dceacf47c651d669f7211e01f4a10401e
 
 int main()
 {
@@ -491,7 +485,6 @@ int main()
     return 0;
 }
 
-<<<<<<< HEAD
 int Prg()
 {
     if (Blk())
@@ -1043,5 +1036,3 @@ int Rel()
         return 0;
      }
 }
-=======
->>>>>>> f9f8741dceacf47c651d669f7211e01f4a10401e
