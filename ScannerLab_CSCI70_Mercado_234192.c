@@ -476,7 +476,7 @@ int main()
     closedir(folder);    
 
     printf("%s\n", gettoken("output.txt"));
-        printf("%s\n", gettoken("output.txt"));
+    printf("%s\n", gettoken("output.txt"));
     printf("%s\n", gettoken("output.txt"));
     printf("%s\n", gettoken("output.txt"));
     printf("%s\n", gettoken("output.txt"));
@@ -585,7 +585,7 @@ int Stm()
             return 0;
         }
     }
-    else if (strcmp(nextToken, "PRINT") == 0)
+    else if (strcmp(nextToken, "Print") == 0)
     {
         moveToNextToken();
         printf("NextToken: %s\n", nextToken);
@@ -639,7 +639,7 @@ int Stm()
             return 0;
         }
     }
-    else if (strcmp(nextToken, "IF") == 0)
+    else if (strcmp(nextToken, "If") == 0)
     {
         if (Cnd())
         {
@@ -733,7 +733,7 @@ int Arg()
 int Iffollow()
 {
 
-    if (strcmp(nextToken, "ENDIF") == 0)
+    if (strcmp(nextToken, "Endif") == 0)
     {
         moveToNextToken();
         printf("NextToken: %s\n", nextToken);
@@ -747,13 +747,13 @@ int Iffollow()
             return 0;
         }
     }
-    else if (strcmp(nextToken, "ELSE") == 0)
+    else if (strcmp(nextToken, "Else") == 0)
     {
         if (Blk())
         {
             moveToNextToken();
             printf("NextToken: %s\n", nextToken);
-            if (strcmp(nextToken, "ENDIF") == 0)
+            if (strcmp(nextToken, "Endif") == 0)
             {
                 if (strcmp(nextToken, "Semicolon") == 0)
                 {
@@ -1007,7 +1007,7 @@ int Val()
         printf("NextToken: %s\n", nextToken);
         return 1;
     }
-    else if (strcmp(nextToken, "SQRT") == 0)
+    else if (strcmp(nextToken, "Sqrt") == 0)
     {
         if (strcmp(nextToken, "LeftParen") == 0)
         {
