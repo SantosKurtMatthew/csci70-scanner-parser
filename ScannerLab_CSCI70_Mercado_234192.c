@@ -480,9 +480,11 @@ void parseFile(char *fileName){
     char* found;
 
     while ((found = strstr(current, "input")) != NULL) { // replace all instances of input with output
+        // generate the filename of the output_scan file to be read for tokens
         strncat(scanFile, current, found - current);
         strcat(scanFile, "output_scan");
 
+        // generate the filename of the output_parse file
         strncat(outputName, current, found - current);
         strcat(outputName, "output_parse");
         current = found + strlen("input");
@@ -490,16 +492,18 @@ void parseFile(char *fileName){
     strcat(scanFile, current);
     currentScanFile = scanFile;
 
+    // Generate the complete filename of the output_parse file
     strcat(outputName, current);
-    printf("FINAL: %s\n", outputName);
     
+    // Open the output file and start parsing
     parse_Output = fopen(outputName, "w");
 
     gettoken(currentScanFile);
     Prg(fileName);
-    // printf("scan file: %s\n", currentScanFile);
-    // fclose(input);
+
+    // Close the file after parsing
     fclose(parse_Output);
+    
 }
 
 
@@ -513,46 +517,24 @@ int main()
 
         if (strstr(de->d_name, "input") != NULL && suffix != NULL && strcmp(suffix, ".txt") == 0) {
             readFile(de->d_name); // scan each valid file
-            
-            // kurt implementation: generate filename for output scan file and then parse it
-            printf("____________input: %s____________________\n", de->d_name);
-            parseFile(de->d_name);
-            // gettoken(currentScanFile);
-            // Prg();
+            parseFile(de->d_name); // parse the scanned files
             
         }
     }
 
     closedir(folder);    
-
-    // printf("%s\n", gettoken("output.txt"));
-    // printf("%s\n", gettoken("output.txt"));
-    // printf("%s\n", gettoken("output.txt"));
-    // printf("%s\n", gettoken("output.txt"));
-    // printf("%s\n", gettoken("output.txt"));
-    // printf("%s\n", gettoken("output.txt"));
-    // printf("%s\n", gettoken("output.txt"));
-    // printf("%s\n", gettoken("output.txt"));
-
-
-    
-    // nextToken = tokens[counter];
-    // printf("%s\n", tokens[counter]);
-    // printf("%s\n", nextToken);
-    // gettoken("output.txt");
-
-    // gettoken("output.txt");
-    // Prg();
     return 0;
 }
 
+// Prg production
+// Takes the input filename in order to write the valid SimpCalc program statement
 int Prg(char *fileName)
 {
+    // -> Blk EndofFile
     if (Blk())
     {
         if (strcmp(nextToken, "EndofFile") == 0)
         {
-            printf("%s is a valid SimpCalc program\n", fileName);
             fprintf(parse_Output, "%s is a valid SimpCalc program\n", fileName);
             return 1;
         }
@@ -567,9 +549,10 @@ int Prg(char *fileName)
     }
 }
 
+// Blk production
 int Blk()
 {
-    if (Stm())
+    if (Stm()) // -> Stm Blk
     {
         if (Blk())
         {
@@ -586,10 +569,11 @@ int Blk()
     }
 }
 
+
+// Stm production
 int Stm()
 {
-    // printf("STM called\n");
-    if (strcmp(nextToken, "Identifier") == 0)
+    if (strcmp(nextToken, "Identifier") == 0) // -> Identifier := Exp;
     {
         gettoken(currentScanFile);
     
@@ -602,7 +586,6 @@ int Stm()
             {
                 if (strcmp(nextToken, "Semicolon") == 0)
                 {
-                    printf("Assignment Statement Recognized\n");
                     fprintf(parse_Output, "Assignment Statement Recognized\n");
 
                     gettoken(currentScanFile);
@@ -610,26 +593,23 @@ int Stm()
                 }
                 else
                 {
-                    printf("Invalid Statement\n");
                     fprintf(parse_Output, "Invalid Statement\n");
                     return 0;
                 }
             }
             else
             {
-                printf("Invalid Statement\n");
                 fprintf(parse_Output, "Invalid Statement\n");
                 return 0;
             }
         }
         else
         {
-            printf("Invalid Statement\n");
             fprintf(parse_Output, "Invalid Statement\n");
             return 0;
         }
     }
-    else if (strcmp(nextToken, "Print") == 0)
+    else if (strcmp(nextToken, "Print") == 0) // -> PRINT(Arg Argfollow);
     {
         gettoken(currentScanFile);
         if (strcmp(nextToken, "LeftParen") == 0)
@@ -646,7 +626,6 @@ int Stm()
 
                         if (strcmp(nextToken, "Semicolon") == 0)
                         {
-                            printf("Print Statement Recognized\n");
                             fprintf(parse_Output, "Print Statement Recognized\n");
                             gettoken(currentScanFile);
                             return 1;
@@ -654,35 +633,30 @@ int Stm()
                     }
                     else
                     {
-                        printf("Invalid Statement\n");
                         fprintf(parse_Output, "Invalid Statement\n");
                         return 0;
                     }
                 }
                 else
                 {
-                    printf("Invalid Statement\n");
                     fprintf(parse_Output, "Invalid Statement\n");
                     return 0;
                 }
             }
             else
             {
-                printf("Invalid Statement\n");
                 fprintf(parse_Output, "Invalid Statement\n");
                 return 0;
             }
         }
         else
         {
-            printf("Invalid Statement\n");
             fprintf(parse_Output, "Invalid Statement\n");
             return 0;
         }
     }
-    else if (strcmp(nextToken, "If") == 0)
+    else if (strcmp(nextToken, "If") == 0) // -> IF Cnd : Blk Iffollow
     {
-        printf("If Statement Begins\n");
         fprintf(parse_Output, "If Statement Begins\n");
         gettoken(currentScanFile);
 
@@ -711,7 +685,6 @@ int Stm()
             else
             {
                 // Invalid Statement
-                printf("Invalid Statement\n");
                 fprintf(parse_Output, "Invalid Statement\n");
                 return 0;
             }
@@ -719,7 +692,6 @@ int Stm()
         else
         {
             // Invalid Statement
-            printf("Invalid Statement\n");
             fprintf(parse_Output, "Invalid Statement\n");
             return 0;
         }
@@ -730,10 +702,10 @@ int Stm()
     }
 }
 
+// Argfollow production
 int Argfollow()
 {
-
-    if (strcmp(nextToken, "Comma") == 0)
+    if (strcmp(nextToken, "Comma") == 0) // -> , Arg Argfollow
     {
         gettoken(currentScanFile);
 
@@ -759,49 +731,48 @@ int Argfollow()
     }
 }
 
+// Arg production
 int Arg()
 {
 
-    if (strcmp(nextToken, "String") == 0)
+    if (strcmp(nextToken, "String") == 0) // -> String
     {
         gettoken(currentScanFile);
         return 1;
     }
-    else if (Exp())
+    else if (Exp()) // -> Exp
     {
         return 1;
     }
     else
     {   
-        printf("Symbol Expected\n");
         fprintf(parse_Output, "Symbol Expected\n");
         return 0;
     }
 }
 
+// Iffollow production
 int Iffollow()
 {
 
-    if (strcmp(nextToken, "Endif") == 0)
+    if (strcmp(nextToken, "Endif") == 0) // -> ENDIF;
     {
         gettoken(currentScanFile);
 
         if (strcmp(nextToken, "Semicolon") == 0)
         {
 
-            printf("If Statement Ends\n");
             fprintf(parse_Output, "If Statement Ends\n");
             gettoken(currentScanFile);
             return 1;
         }
         else
         {
-            printf("Symbol Expected\n");
             fprintf(parse_Output, "Symbol Expected\n");
             return 0;
         }
     }
-    else if (strcmp(nextToken, "Else") == 0)
+    else if (strcmp(nextToken, "Else") == 0) // -> ELSE Blk ENDIF;
     {
         gettoken(currentScanFile);
 
@@ -813,43 +784,39 @@ int Iffollow()
 
                 if (strcmp(nextToken, "Semicolon") == 0)
                 {
-                    printf("If Statement Ends\n");
                     fprintf(parse_Output, "If Statement Ends\n");
                     gettoken(currentScanFile);
                     return 1;
                 }
                 else
                 {
-                    printf("Incomplete If Statement\n");
                     fprintf(parse_Output, "Incomplete If Statement\n");
                     return 0;
                 }
             }
             else
             {
-                printf("Incomplete If Statement\n");
                 fprintf(parse_Output, "Incomplete If Statement\n");
                 return 0;
             }
         }
         else
         {
-            printf("Incomplete If Statement\n");
             fprintf(parse_Output, "Incomplete If Statement\n");
             return 0;
         }
     }
     else
     {
-        printf("Incomplete If Statement\n");
         fprintf(parse_Output, "Incomplete If Statement\n");
         return 0;
     }
 }
 
+// Exp production
 int Exp()
 {
-    if (Trm())
+    if (Trm()) // -> Trm Trmfollow
     {
         if (Trmfollow())
         {
@@ -866,9 +833,10 @@ int Exp()
     }
 }
 
+// Trmfollow production
 int Trmfollow()
 {   
-    if (strcmp(nextToken, "Plus") == 0)
+    if (strcmp(nextToken, "Plus") == 0) // -> + Trm Trmfollow
     {
         gettoken(currentScanFile);
         if (Trm())
@@ -887,7 +855,7 @@ int Trmfollow()
             return 0;
         }
     }
-    else if (strcmp(nextToken, "Minus") == 0)
+    else if (strcmp(nextToken, "Minus") == 0) // -> - Trm Trmfollow
     {
         gettoken(currentScanFile);
         if (Trm())
@@ -912,9 +880,10 @@ int Trmfollow()
     }
 }
 
+// Trm production
 int Trm()
 {
-    if (Fac())
+    if (Fac()) // -> Fac Facfollow
     {
         if (Facfollow())
         {
@@ -931,9 +900,10 @@ int Trm()
     }
 }
 
+// Facfollow production
 int Facfollow()
 {
-    if (strcmp(nextToken, "Multiply") == 0)
+    if (strcmp(nextToken, "Multiply") == 0) // -> * Fac Facfollow
     {
         gettoken(currentScanFile);
         if (Fac())
@@ -948,7 +918,7 @@ int Facfollow()
             }
         }
     }
-    else if (strcmp(nextToken, "Divide") == 0)
+    else if (strcmp(nextToken, "Divide") == 0) // -> / Fac Facfollow
     {
         gettoken(currentScanFile);
         if (Fac())
@@ -969,9 +939,10 @@ int Facfollow()
     }
 }
 
+// Fac production
 int Fac()
 {
-    if (Lit())
+    if (Lit()) // -> Lit Litfollow
     {
         if (Litfollow())
         {
@@ -988,9 +959,10 @@ int Fac()
     }
 }
 
+// Litfollow production
 int Litfollow()
 {
-    if (strcmp(nextToken, "Raise") == 0)
+    if (strcmp(nextToken, "Raise") == 0) // -> ** Lit Litfollow
     {
         gettoken(currentScanFile);
         if (Lit())
@@ -1015,9 +987,10 @@ int Litfollow()
     }
 }
 
+// Lit production
 int Lit()
 {
-    if (strcmp(nextToken, "Minus") == 0)
+    if (strcmp(nextToken, "Minus") == 0) // -> - Val
     {
         gettoken(currentScanFile);
         if (Val())
@@ -1029,7 +1002,7 @@ int Lit()
             return 0;
         }
     }
-    else if (Val())
+    else if (Val()) // -> Val
     {
         return 1;
     }
@@ -1039,23 +1012,24 @@ int Lit()
     }
 }
 
+// Val production
 int Val()
 {
-    if (strcmp(nextToken, "Identifier") == 0)
+    if (strcmp(nextToken, "Identifier") == 0) // Identifier
     {
         gettoken(currentScanFile);
         return 1;
     }
-    else if (strcmp(nextToken, "Number") == 0)
+    else if (strcmp(nextToken, "Number") == 0) // Number
     {
         gettoken(currentScanFile);
         return 1;
     }
-    else if (strcmp(nextToken, "Sqrt") == 0)
+    else if (strcmp(nextToken, "Sqrt") == 0) // SQRT(EXP)
     {
         gettoken(currentScanFile);
 
-        if (strcmp(nextToken, "LeftParen") == 0)
+        if (strcmp(nextToken, "LeftParen") == 0) 
         {
             gettoken(currentScanFile);
 
@@ -1069,7 +1043,6 @@ int Val()
                 else
                 {
                     // Symbol Expected
-                    printf("Symbol Expected\n");
                     fprintf(parse_Output, "Symbol Expected\n");
                     return 0;
                 }
@@ -1078,12 +1051,11 @@ int Val()
         else
         {
             // Symbol Expected
-            printf("Symbol Expected\n");
             fprintf(parse_Output, "Symbol Expected\n");
             return 0;
         }
     }
-    else if (strcmp(nextToken, "LeftParen") == 0)
+    else if (strcmp(nextToken, "LeftParen") == 0) // (EXP)
     {
         gettoken(currentScanFile);
         if (Exp())
@@ -1096,7 +1068,6 @@ int Val()
             else
             {
                 // Symbol Expected
-                printf("Symbol Expected\n");
                 fprintf(parse_Output, "Symbol Expected\n");
                 return 0;
             }
@@ -1105,15 +1076,15 @@ int Val()
     else
     {
         // Symbol Expected
-        printf("Symbol Expected\n");
         fprintf(parse_Output, "Symbol Expected\n");
         return 0;
     }
 }
 
+// Cnd production
 int Cnd()
 {
-    if (Exp())
+    if (Exp()) // -> Exp Rel Exp
     {
         if (Rel())
         {
@@ -1130,7 +1101,6 @@ int Cnd()
         }
         else
         {
-            printf("Missing Relational Operator\n");
             fprintf(parse_Output, "Missing Relational Operator\n");
             return 0;
         }
@@ -1141,6 +1111,7 @@ int Cnd()
     }
 }
 
+// Rel production
 int Rel()
 {
     if(strcmp(nextToken, "LessThan") == 0){ return 1; }
