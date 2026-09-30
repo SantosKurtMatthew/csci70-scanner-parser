@@ -31,22 +31,22 @@ TODO:   add proper success/failure statements to parser functions,
         replace nextToken with the required getToken() function,
         test everything
 
-UNFINISHED  1. Prg
-UNFINISHED  2. Blk
-UNFINISHED  3. Stm
-UNFINISHED  4. Argfollow
-UNFINISHED  5. Arg
-UNFINISHED  6. Iffollow
-UNFINISHED  7. Exp
-UNFINISHED  8. Trmfollow
-UNFINISHED  9. Trm
-UNFINISHED  10. Facfollow
-UNFINISHED  11. Fac
-UNFINISHED  12. Litfollow
-UNFINISHED  13. Lit
-UNFINISHED  14. Val
-UNFINISHED  15. Cnd
-UNFINISHED  16. Rel
+DONE  1. Prg
+DONE  2. Blk
+DONE  3. Stm
+DONE  4. Argfollow
+DONE  5. Arg
+DONE  6. Iffollow
+DONE  7. Exp
+DONE  8. Trmfollow
+DONE  9. Trm
+DONE  10. Facfollow
+DONE  11. Fac
+DONE  12. Litfollow
+DONE  13. Lit
+DONE  14. Val
+DONE  15. Cnd
+DONE  16. Rel
 */
 
 #include <stdio.h>
@@ -62,6 +62,7 @@ char* currentScanFile;
 FILE *parse_Output;
 
 int finalSuccess = 1;
+int symbolSuccess = 1;
 
 char *gettoken (char *fileName) {
     // printf("file: %s\n", fileName);
@@ -668,7 +669,7 @@ int Stm()
             {
                 gettoken(currentScanFile);
                 
-                if (Blk())
+                if (Blk() && symbolSuccess == 1)
                 {
                     if (Iffollow())
                     {
@@ -767,6 +768,7 @@ int Iffollow()
         }
         else
         {
+            symbolSuccess = 0;
             fprintf(parse_Output, "Symbol Expected\n");
             return 0;
         }
@@ -775,7 +777,7 @@ int Iffollow()
     {
         gettoken(currentScanFile);
 
-        if (Blk())
+        if (Blk() && symbolSuccess == 1)
         {
             if (strcmp(nextToken, "Endif") == 0)
             {
@@ -1043,7 +1045,7 @@ int Val()
                 }
                 else
                 {
-                    // Symbol Expected
+                    symbolSuccess = 0;
                     fprintf(parse_Output, "Symbol Expected\n");
                     return 0;
                 }
@@ -1051,7 +1053,7 @@ int Val()
         }
         else
         {
-            // Symbol Expected
+            symbolSuccess = 0;
             fprintf(parse_Output, "Symbol Expected\n");
             return 0;
         }
@@ -1068,7 +1070,7 @@ int Val()
             }
             else
             {
-                // Symbol Expected
+                symbolSuccess = 0;
                 fprintf(parse_Output, "Symbol Expected\n");
                 return 0;
             }
@@ -1076,7 +1078,7 @@ int Val()
     }
     else
     {
-        // Symbol Expected
+        symbolSuccess = 0;
         fprintf(parse_Output, "Symbol Expected\n");
         return 0;
     }
