@@ -61,6 +61,8 @@ char* nextToken;
 char* currentScanFile;
 FILE *parse_Output;
 
+int finalSuccess = 1;
+
 char *gettoken (char *fileName) {
     // printf("file: %s\n", fileName);
     static FILE *parseInput = NULL;
@@ -537,7 +539,7 @@ int Prg(char *fileName)
     // -> Blk EndofFile
     if (Blk())
     {
-        if (strcmp(nextToken, "EndofFile") == 0)
+        if (strcmp(nextToken, "EndofFile") == 0 && finalSuccess == 1)
         {
             fprintf(parse_Output, "%s is a valid SimpCalc program\n", fileName);
             return 1;
@@ -787,12 +789,14 @@ int Iffollow()
                 }
                 else
                 {
+                    finalSuccess = 0;
                     fprintf(parse_Output, "Incomplete If Statement\n");
                     return 0;
                 }
             }
             else
             {
+                finalSuccess = 0;
                 fprintf(parse_Output, "Incomplete If Statement\n");
                 return 0;
             }
@@ -804,6 +808,7 @@ int Iffollow()
     }
     else
     {
+        finalSuccess = 0;
         fprintf(parse_Output, "Incomplete If Statement\n");
         return 0;
     }
@@ -1117,7 +1122,6 @@ int Rel()
     else if(strcmp(nextToken, "NotEqual") == 0){ return 1; }
     else if(strcmp(nextToken, "LTEqual") == 0){ return 1; }
     else { 
-        // I dont think we need an error statement here since itll print in the Cnd production if theres an error
         return 0;
      }
 }
