@@ -475,26 +475,24 @@ void readFile(char *fileName) { // function to read each individual input text f
 
 void parseFile(char *fileName){
     char scanFile[256] = "";
+    char outputName[256] = "";
     char* current = fileName;   
     char* found;
 
     while ((found = strstr(current, "input")) != NULL) { // replace all instances of input with output
         strncat(scanFile, current, found - current);
         strcat(scanFile, "output_scan");
+
+        strncat(outputName, current, found - current);
+        strcat(outputName, "output_parse");
         current = found + strlen("input");
     }
     strcat(scanFile, current);
     currentScanFile = scanFile;
 
-
-    // Kurt trying to write to output files
-    char outputName[256] = "";
-    while ((found = strstr(current, "input")) != NULL) { // replace all instances of input with output
-        strncat(outputName, current, found - current);
-        strcat(outputName, "output_parse");
-        current = found + strlen("input");
-    }
     strcat(outputName, current);
+    printf("FINAL: %s\n", outputName);
+    
     parse_Output = fopen(outputName, "w");
 
     gettoken(currentScanFile);
