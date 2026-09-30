@@ -366,6 +366,10 @@ void readFile(char *fileName) { // function to read each individual input text f
                     fprintf(output, "%c", ch);
                     end();
                 }
+                else if (ch == '\n'){ // checks if new line before string could be closedd
+                    fprintf(output, "\nLexical Error reading character \"\\n\"\n"); // go to state S if yes
+                    State = 'S';
+                }
                 else {
                     State = 'J';
                     fprintf(output, "%c", ch);
@@ -579,7 +583,6 @@ int Stm()
     
         if (strcmp(nextToken, "Assign") == 0)
         {
-        
             gettoken(currentScanFile);
 
             if (Exp())
@@ -599,7 +602,6 @@ int Stm()
             }
             else
             {
-                fprintf(parse_Output, "Invalid Statement\n");
                 return 0;
             }
         }
@@ -639,13 +641,11 @@ int Stm()
                 }
                 else
                 {
-                    fprintf(parse_Output, "Invalid Statement\n");
                     return 0;
                 }
             }
             else
             {
-                fprintf(parse_Output, "Invalid Statement\n");
                 return 0;
             }
         }
@@ -691,8 +691,6 @@ int Stm()
         }
         else
         {
-            // Invalid Statement
-            fprintf(parse_Output, "Invalid Statement\n");
             return 0;
         }
     }
@@ -746,7 +744,6 @@ int Arg()
     }
     else
     {   
-        fprintf(parse_Output, "Symbol Expected\n");
         return 0;
     }
 }
@@ -802,7 +799,6 @@ int Iffollow()
         }
         else
         {
-            fprintf(parse_Output, "Incomplete If Statement\n");
             return 0;
         }
     }
